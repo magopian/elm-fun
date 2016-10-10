@@ -7678,6 +7678,43 @@ var _elm_lang$html$Html$details = _elm_lang$html$Html$node('details');
 var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
+var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
+var _elm_lang$html$Html_App$program = function (app) {
+	return _elm_lang$html$Html_App$programWithFlags(
+		_elm_lang$core$Native_Utils.update(
+			app,
+			{
+				init: function (_p0) {
+					return app.init;
+				}
+			}));
+};
+var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
+	var _p2 = _p1;
+	return _elm_lang$html$Html_App$programWithFlags(
+		{
+			init: function (_p3) {
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_p2.model,
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			},
+			update: F2(
+				function (msg, model) {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						A2(_p2.update, msg, model),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				}),
+			view: _p2.view,
+			subscriptions: function (_p4) {
+				return _elm_lang$core$Platform_Sub$none;
+			}
+		});
+};
+var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
 var _evancz$elm_graphics$Native_Element = function()
 {
 
@@ -10149,51 +10186,8 @@ var _user$project$Main$movesToPaths = function (moves) {
 			[]),
 		moves);
 };
-var _user$project$Main$Right = function (a) {
-	return {ctor: 'Right', _0: a};
-};
-var _user$project$Main$Left = function (a) {
-	return {ctor: 'Left', _0: a};
-};
-var _user$project$Main$Forward = function (a) {
-	return {ctor: 'Forward', _0: a};
-};
-var _user$project$Main$moves = _elm_lang$core$Native_List.fromArray(
-	[
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(135),
-		_user$project$Main$Forward(100),
-		_user$project$Main$Left(180),
-		_user$project$Main$Forward(100)
-	]);
-var _user$project$Main$main = {
-	main: _evancz$elm_graphics$Element$toHtml(
+var _user$project$Main$view = function (model) {
+	return _evancz$elm_graphics$Element$toHtml(
 		A3(
 			_evancz$elm_graphics$Collage$collage,
 			600,
@@ -10205,7 +10199,64 @@ var _user$project$Main$main = {
 				A2(
 					_elm_lang$core$List$map,
 					_user$project$Main$drawPath,
-					_user$project$Main$movesToPaths(_user$project$Main$moves)))))
+					_user$project$Main$movesToPaths(model.moves)))));
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		return model;
+	});
+var _user$project$Main$Model = function (a) {
+	return {moves: a};
+};
+var _user$project$Main$Noop = {ctor: 'Noop'};
+var _user$project$Main$Right = function (a) {
+	return {ctor: 'Right', _0: a};
+};
+var _user$project$Main$Left = function (a) {
+	return {ctor: 'Left', _0: a};
+};
+var _user$project$Main$Forward = function (a) {
+	return {ctor: 'Forward', _0: a};
+};
+var _user$project$Main$initialModel = {
+	moves: _elm_lang$core$Native_List.fromArray(
+		[
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(135),
+			_user$project$Main$Forward(100),
+			_user$project$Main$Left(180),
+			_user$project$Main$Forward(100)
+		])
+};
+var _user$project$Main$main = {
+	main: _elm_lang$html$Html_App$beginnerProgram(
+		{view: _user$project$Main$view, model: _user$project$Main$initialModel, update: _user$project$Main$update})
 };
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

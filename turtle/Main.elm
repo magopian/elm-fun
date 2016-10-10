@@ -3,7 +3,92 @@ module Main exposing (..)
 import Collage
 import Element
 import Html exposing (Html)
+import Html.App
 import List
+
+
+-- Update
+
+
+type Msg
+    = Noop
+
+
+type alias Model =
+    { moves : List Step
+    }
+
+
+initialModel : Model
+initialModel =
+    { moves =
+        [ Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        , Left 135
+        , Forward 100
+        , Left 180
+        , Forward 100
+        ]
+    }
+
+
+update : Msg -> Model -> Model
+update msg model =
+    model
+
+
+
+-- View
+
+
+view : Model -> Html Msg
+view model =
+    Element.toHtml <|
+        Collage.collage 600 600 <|
+            ((drawShape <| Collage.rect 600 600)
+                :: List.map drawPath (movesToPaths model.moves)
+            )
+
+
+
+-- Main
+
+
+main =
+    Html.App.beginnerProgram
+        { view = view
+        , model = initialModel
+        , update = update
+        }
+
+
+
+-- Helpers
 
 
 startingPoint =
@@ -40,42 +125,6 @@ drawShape shape =
 drawPath : Collage.Path -> Collage.Form
 drawPath path =
     path |> Collage.traced Collage.defaultLine
-
-
-moves : List Step
-moves =
-    [ Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    , Left 135
-    , Forward 100
-    , Left 180
-    , Forward 100
-    ]
 
 
 toPath : Point -> Angle -> Step -> ( Point, Angle, Maybe Collage.Path )
@@ -127,11 +176,3 @@ movesToPaths moves =
                     paths
     in
         movesToPaths' startingPoint startingAngle [] moves
-
-
-main =
-    Element.toHtml <|
-        Collage.collage 600 600 <|
-            ((drawShape <| Collage.rect 600 600)
-                :: List.map drawPath (movesToPaths moves)
-            )
