@@ -1,0 +1,29 @@
+{
+  "name": "turtle",
+  "version": "1.0.0",
+  "description": "Playing around with Elm, implementing a turtle",
+  "main": "index.js",
+  "scripts": {
+    "build": "node_modules/.bin/elm-make Main.elm --output=app.js",
+    "start": "node_modules/.bin/elm-reactor",
+    "live": "node_modules/.bin/elm-live Main.elm",
+    "publish-to-gh-pages": "npm run build && node_modules/.bin/gh-pages --dist ./",
+    "test": "node_modules/.bin/elm-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magopian/elm-fun.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/magopian/elm-fun/issues"
+  },
+  "homepage": "https://github.com/magopian/elm-fun#readme",
+  "devDependencies": {
+    "elm": "^0.17.1",
+    "elm-live": "^2.5.0",
+    "elm-test": "^0.17.3",
+    "gh-pages": "^0.11.0"
+  }
+}
