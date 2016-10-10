@@ -92,7 +92,7 @@ view model =
                     (\( i, res ) ->
                         case res of
                             Ok _ ->
-                                ""
+                                Debug.crash "we filtered, we can't be here"
 
                             Err msg ->
                                 "Line " ++ (toString i) ++ ": " ++ msg

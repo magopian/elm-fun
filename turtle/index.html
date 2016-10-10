@@ -10719,7 +10719,13 @@ var _user$project$Main$view = function (model) {
 				var _p12 = _p11;
 				var _p13 = _p12._1;
 				if (_p13.ctor === 'Ok') {
-					return '';
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Main',
+						{
+							start: {line: 93, column: 25},
+							end: {line: 98, column: 71}
+						},
+						_p13)('we filtered, we can\'t be here');
 				} else {
 					return A2(
 						_elm_lang$core$Basics_ops['++'],
@@ -10732,10 +10738,10 @@ var _user$project$Main$view = function (model) {
 			},
 			A2(
 				_elm_lang$core$List$filter,
-				function (_p14) {
-					var _p15 = _p14;
-					var _p16 = _p15._1;
-					if (_p16.ctor === 'Ok') {
+				function (_p15) {
+					var _p16 = _p15;
+					var _p17 = _p16._1;
+					if (_p17.ctor === 'Ok') {
 						return false;
 					} else {
 						return true;
@@ -10744,11 +10750,11 @@ var _user$project$Main$view = function (model) {
 				parsed)));
 	var moves = A2(
 		_elm_lang$core$List$map,
-		function (_p17) {
-			var _p18 = _p17;
-			var _p19 = _p18._1;
-			if (_p19.ctor === 'Ok') {
-				return _p19._0;
+		function (_p18) {
+			var _p19 = _p18;
+			var _p20 = _p19._1;
+			if (_p20.ctor === 'Ok') {
+				return _p20._0;
 			} else {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Main',
@@ -10756,15 +10762,15 @@ var _user$project$Main$view = function (model) {
 						start: {line: 115, column: 25},
 						end: {line: 120, column: 76}
 					},
-					_p19)('we filtered, we can\'t be here');
+					_p20)('we filtered, we can\'t be here');
 			}
 		},
 		A2(
 			_elm_lang$core$List$filter,
-			function (_p21) {
-				var _p22 = _p21;
-				var _p23 = _p22._1;
-				if (_p23.ctor === 'Ok') {
+			function (_p22) {
+				var _p23 = _p22;
+				var _p24 = _p23._1;
+				if (_p24.ctor === 'Ok') {
 					return true;
 				} else {
 					return false;
