@@ -44,7 +44,38 @@ drawPath path =
 
 moves : List Step
 moves =
-    [ Forward 100, Left 90, Forward 100, Left 90, Forward 100 ]
+    [ Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    , Left 135
+    , Forward 100
+    , Left 180
+    , Forward 100
+    ]
 
 
 toPath : Point -> Angle -> Step -> ( Point, Angle, Maybe Collage.Path )
