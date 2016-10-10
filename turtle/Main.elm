@@ -4,62 +4,67 @@ import Collage
 import Element
 import Html exposing (Html)
 import Html.App
+import Html.Attributes
+import Html.Events
 import List
+import String
 
 
 -- Update
 
 
 type Msg
-    = Noop
+    = CommandsChange String
 
 
 type alias Model =
-    { moves : List Step
+    { commands : List String
     }
 
 
 initialModel : Model
 initialModel =
-    { moves =
-        [ Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
-        , Left 135
-        , Forward 100
-        , Left 180
-        , Forward 100
+    { commands =
+        [ "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
+        , "Left 135"
+        , "Forward 100"
+        , "Left 180"
+        , "Forward 100"
         ]
     }
 
 
 update : Msg -> Model -> Model
 update msg model =
-    model
+    case msg of
+        CommandsChange commands ->
+            { model | commands = String.split "\n" commands }
 
 
 
@@ -68,11 +73,70 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Element.toHtml <|
-        Collage.collage 600 600 <|
-            ((drawShape <| Collage.rect 600 600)
-                :: List.map drawPath (movesToPaths model.moves)
-            )
+    let
+        parsed =
+            commandsToMoves model.commands
+
+        errors =
+            parsed
+                |> List.filter
+                    (\( i, res ) ->
+                        case res of
+                            Ok _ ->
+                                False
+
+                            Err _ ->
+                                True
+                    )
+                |> List.map
+                    (\( i, res ) ->
+                        case res of
+                            Ok _ ->
+                                ""
+
+                            Err msg ->
+                                "Line " ++ (toString i) ++ ": " ++ msg
+                    )
+                |> String.join "\n"
+
+        moves =
+            parsed
+                |> List.filter
+                    (\( _, res ) ->
+                        case res of
+                            Ok move ->
+                                True
+
+                            Err _ ->
+                                False
+                    )
+                |> List.map
+                    (\( _, res ) ->
+                        case res of
+                            Ok move ->
+                                move
+
+                            Err _ ->
+                                Debug.crash "we filtered, we can't be here"
+                    )
+    in
+        Html.div []
+            [ Html.textarea
+                [ Html.Attributes.style
+                    [ ( "width", "600px" )
+                    , ( "height", "600px" )
+                    , ( "float", "left" )
+                    ]
+                , Html.Events.onInput CommandsChange
+                ]
+                [ Html.text <| String.join "\n" model.commands ]
+            , Element.toHtml <|
+                Collage.collage 600 600 <|
+                    ((drawShape <| Collage.rect 600 600)
+                        :: List.map drawPath (movesToPaths moves)
+                    )
+            , Html.pre [] [ Html.text errors ]
+            ]
 
 
 
@@ -125,6 +189,31 @@ drawShape shape =
 drawPath : Collage.Path -> Collage.Form
 drawPath path =
     path |> Collage.traced Collage.defaultLine
+
+
+parseCommand : String -> Result String Step
+parseCommand command =
+    case String.split " " command of
+        [ "Forward", distance ] ->
+            Result.map Forward (String.toFloat distance)
+
+        [ "Left", angle ] ->
+            Result.map Left (String.toFloat angle)
+
+        [ "Right", angle ] ->
+            Result.map Right (String.toFloat angle)
+
+        _ ->
+            Err "Could not parse the command"
+
+
+commandsToMoves : List String -> List ( Int, Result String Step )
+commandsToMoves commands =
+    List.indexedMap
+        (\i command ->
+            ( i, parseCommand command )
+        )
+        commands
 
 
 toPath : Point -> Angle -> Step -> ( Point, Angle, Maybe Collage.Path )
