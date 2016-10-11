@@ -10637,22 +10637,43 @@ var _user$project$Main$movesToPaths = function (moves) {
 			[]),
 		moves);
 };
+var _user$project$Main$elm = _elm_lang$core$Native_List.fromArray(
+	['Left 90', 'Forward 150', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 120', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 100', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
+var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
+	['Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100']);
+var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
+	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
+var _user$project$Main$initialModel = {commands: _user$project$Main$house};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p9 = msg;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				commands: A2(_elm_lang$core$String$split, '\n', _p9._0)
-			});
+		switch (_p9.ctor) {
+			case 'CommandsChange':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						commands: A2(_elm_lang$core$String$split, '\n', _p9._0)
+					});
+			case 'DrawHouse':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{commands: _user$project$Main$house});
+			case 'DrawStar':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{commands: _user$project$Main$star});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{commands: _user$project$Main$elm});
+		}
 	});
-var _user$project$Main$initialModel = {
-	commands: _elm_lang$core$Native_List.fromArray(
-		['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100'])
-};
 var _user$project$Main$Model = function (a) {
 	return {commands: a};
 };
+var _user$project$Main$DrawElm = {ctor: 'DrawElm'};
+var _user$project$Main$DrawStar = {ctor: 'DrawStar'};
+var _user$project$Main$DrawHouse = {ctor: 'DrawHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
 };
@@ -10722,8 +10743,8 @@ var _user$project$Main$view = function (model) {
 					return _elm_lang$core$Native_Utils.crashCase(
 						'Main',
 						{
-							start: {line: 77, column: 25},
-							end: {line: 82, column: 71}
+							start: {line: 141, column: 25},
+							end: {line: 146, column: 71}
 						},
 						_p13)('we filtered, we can\'t be here');
 				} else {
@@ -10759,8 +10780,8 @@ var _user$project$Main$view = function (model) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Main',
 					{
-						start: {line: 99, column: 25},
-						end: {line: 104, column: 76}
+						start: {line: 163, column: 25},
+						end: {line: 168, column: 76}
 					},
 					_p20)('we filtered, we can\'t be here');
 			}
@@ -10814,6 +10835,36 @@ var _user$project$Main$view = function (model) {
 							_elm_lang$core$List$map,
 							_user$project$Main$drawPath,
 							_user$project$Main$movesToPaths(moves))))),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawHouse)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('house')
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawStar)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('star')
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawElm)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Elm')
+					])),
 				A2(
 				_elm_lang$html$Html$pre,
 				_elm_lang$core$Native_List.fromArray(
