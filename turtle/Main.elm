@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Base64
 import Collage
 import Element
 import Html exposing (Html)
@@ -93,26 +94,43 @@ elm =
     ]
 
 
-initialModel : Model
-initialModel =
-    { commands = house
-    }
+type alias Flags =
+    { hash : String }
 
 
-update : Msg -> Model -> Model
+init : Flags -> ( Model, Cmd Msg )
+init { hash } =
+    case hash of
+        "" ->
+            ( { commands = house }, Cmd.none )
+
+        hash ->
+            case Base64.decode hash of
+                Ok commands ->
+                    ( { commands = String.split "\n" commands }, Cmd.none )
+
+                Err msg ->
+                    let
+                        _ =
+                            Debug.log "failed to decode hash" msg
+                    in
+                        ( { commands = house }, Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CommandsChange commands ->
-            { model | commands = String.split "\n" commands }
+            { model | commands = String.split "\n" commands } ! []
 
         DrawHouse ->
-            { model | commands = house }
+            { model | commands = house } ! []
 
         DrawStar ->
-            { model | commands = star }
+            { model | commands = star } ! []
 
         DrawElm ->
-            { model | commands = elm }
+            { model | commands = elm } ! []
 
 
 
@@ -125,7 +143,8 @@ view model =
         parsed =
             commandsToMoves model.commands
 
-        (errors, moves) = splitMovesFromErrors parsed
+        ( errors, moves ) =
+            splitMovesFromErrors parsed
     in
         Html.div []
             [ Html.textarea
@@ -151,6 +170,12 @@ view model =
             , Html.button
                 [ Html.Events.onClick DrawElm ]
                 [ Html.text "Elm" ]
+            , Html.p
+                []
+                [ Html.a
+                    [ Html.Attributes.href (urlFromCommands model.commands) ]
+                    [ Html.text "Share url" ]
+                ]
             , Html.pre [] [ Html.text <| String.join "\n" errors ]
             ]
 
@@ -160,23 +185,16 @@ view model =
 
 
 main =
-    Html.App.beginnerProgram
-        { view = view
-        , model = initialModel
+    Html.App.programWithFlags
+        { init = init
+        , view = view
         , update = update
+        , subscriptions = always Sub.none
         }
 
 
 
 -- Helpers
-
-
-startingPoint =
-    ( 0, 0 )
-
-
-startingAngle =
-    90
 
 
 type alias Point =
@@ -257,7 +275,9 @@ splitMovesFromErrors movesAndErrors =
 
                         ( i, Err msg ) ->
                             splitMovesFromErrors'
-                                (("Line " ++ (toString i) ++ ": " ++ msg) :: errors)
+                                (("Line " ++ (toString i) ++ ": " ++ msg)
+                                    :: errors
+                                )
                                 moves
                                 tail
     in
@@ -307,9 +327,23 @@ movesToPaths moves =
                                 movesToPaths' newPoint newAngle paths tail
 
                             Just segment ->
-                                movesToPaths' newPoint newAngle (segment :: paths) tail
+                                movesToPaths'
+                                    newPoint
+                                    newAngle
+                                    (segment :: paths)
+                                    tail
 
                 [] ->
                     paths
     in
-        movesToPaths' startingPoint startingAngle [] moves
+        movesToPaths' (0, 0) 90 [] moves
+
+
+urlFromCommands : List String -> String
+urlFromCommands commands =
+    "#"
+        ++ (commands
+                |> String.join "\n"
+                |> Base64.encode
+                |> Result.withDefault ""
+           )

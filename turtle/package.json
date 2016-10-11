@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node_modules/.bin/elm-reactor",
-    "live": "node_modules/.bin/elm-live Main.elm"
+    "live": "node_modules/.bin/elm-live Main.elm --output=app.js --open"
   },
   "repository": {
     "type": "git",
