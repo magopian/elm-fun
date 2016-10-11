@@ -159,8 +159,8 @@ view model =
             [ Html.p
                 []
                 [ Html.text """Turtle commands:
-                    Forward <Int>,
-                    Left <Int>,
+                    Forward <distance>,
+                    Left <angle>,
                     Right <angle>,
                     PenUp,
                     PenDown
