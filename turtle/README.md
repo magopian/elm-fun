@@ -10,4 +10,5 @@ Implementing (parts of) the [Logo Turtle](https://en.wikipedia.org/wiki/Logo_(pr
 - [ ] Turtle commands builder: add commands dynamically, with sliders for the
       amount (distance/angle)
 - [ ] Add a construct for loops
-- [ ] Additional Turtle commands: PenUp/PenDown, PenColor...
+- [x] Additional Turtle command: PenUp/PenDown
+- [ ] Additional Turtle command: PenColor

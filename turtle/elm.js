@@ -10842,8 +10842,8 @@ var _user$project$Main$urlFromCommands = function (commands) {
 			_truqu$elm_base64$Base64$encode(
 				A2(_elm_lang$core$String$join, '\n', commands))));
 };
-var _user$project$Main$toPath = F3(
-	function (_p0, currentAngle, step) {
+var _user$project$Main$toPath = F4(
+	function (_p0, currentAngle, draw, step) {
 		var _p1 = _p0;
 		var _p4 = _p1;
 		var _p2 = step;
@@ -10858,50 +10858,60 @@ var _user$project$Main$toPath = F3(
 						_elm_lang$core$Basics$degrees(currentAngle)) * _p3)
 				};
 				return {
-					ctor: '_Tuple3',
+					ctor: '_Tuple4',
 					_0: newPoint,
 					_1: currentAngle,
-					_2: _elm_lang$core$Maybe$Just(
+					_2: draw,
+					_3: _elm_lang$core$Maybe$Just(
 						A2(_evancz$elm_graphics$Collage$segment, _p4, newPoint))
 				};
 			case 'Left':
-				return {ctor: '_Tuple3', _0: _p4, _1: currentAngle + _p2._0, _2: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle + _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+			case 'Right':
+				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle - _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+			case 'PenUp':
+				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: false, _3: _elm_lang$core$Maybe$Nothing};
 			default:
-				return {ctor: '_Tuple3', _0: _p4, _1: currentAngle - _p2._0, _2: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: true, _3: _elm_lang$core$Maybe$Nothing};
 		}
 	});
 var _user$project$Main$movesToPaths = function (moves) {
-	var movesToPaths$ = F4(
-		function (point, angle, paths, moves) {
+	var movesToPaths$ = F5(
+		function (point, angle, draw, paths, moves) {
 			movesToPaths$:
 			while (true) {
 				var _p5 = moves;
 				if (_p5.ctor === '::') {
 					var _p8 = _p5._1;
-					var _p6 = A3(_user$project$Main$toPath, point, angle, _p5._0);
+					var _p6 = A4(_user$project$Main$toPath, point, angle, draw, _p5._0);
 					var newPoint = _p6._0;
 					var newAngle = _p6._1;
-					var path = _p6._2;
+					var newDraw = _p6._2;
+					var path = _p6._3;
 					var _p7 = path;
 					if (_p7.ctor === 'Nothing') {
 						var _v4 = newPoint,
 							_v5 = newAngle,
-							_v6 = paths,
-							_v7 = _p8;
+							_v6 = newDraw,
+							_v7 = paths,
+							_v8 = _p8;
 						point = _v4;
 						angle = _v5;
-						paths = _v6;
-						moves = _v7;
+						draw = _v6;
+						paths = _v7;
+						moves = _v8;
 						continue movesToPaths$;
 					} else {
-						var _v8 = newPoint,
-							_v9 = newAngle,
-							_v10 = A2(_elm_lang$core$List_ops['::'], _p7._0, paths),
-							_v11 = _p8;
-						point = _v8;
-						angle = _v9;
-						paths = _v10;
-						moves = _v11;
+						var _v9 = newPoint,
+							_v10 = newAngle,
+							_v11 = newDraw,
+							_v12 = newDraw ? A2(_elm_lang$core$List_ops['::'], _p7._0, paths) : paths,
+							_v13 = _p8;
+						point = _v9;
+						angle = _v10;
+						draw = _v11;
+						paths = _v12;
+						moves = _v13;
 						continue movesToPaths$;
 					}
 				} else {
@@ -10909,10 +10919,11 @@ var _user$project$Main$movesToPaths = function (moves) {
 				}
 			}
 		});
-	return A4(
+	return A5(
 		movesToPaths$,
 		{ctor: '_Tuple2', _0: 0, _1: 0},
 		90,
+		true,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
 		moves);
@@ -10933,15 +10944,15 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 					var _p11 = _p9._1;
 					var _p10 = _p9._0;
 					if (_p10._1.ctor === 'Ok') {
-						var _v14 = errors,
-							_v15 = A2(_elm_lang$core$List_ops['::'], _p10._1._0, moves),
-							_v16 = _p11;
-						errors = _v14;
-						moves = _v15;
-						movesAndErrors = _v16;
+						var _v16 = errors,
+							_v17 = A2(_elm_lang$core$List_ops['::'], _p10._1._0, moves),
+							_v18 = _p11;
+						errors = _v16;
+						moves = _v17;
+						movesAndErrors = _v18;
 						continue splitMovesFromErrors$;
 					} else {
-						var _v17 = A2(
+						var _v19 = A2(
 							_elm_lang$core$List_ops['::'],
 							A2(
 								_elm_lang$core$Basics_ops['++'],
@@ -10951,11 +10962,11 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 									_elm_lang$core$Basics$toString(_p10._0),
 									A2(_elm_lang$core$Basics_ops['++'], ': ', _p10._1._0))),
 							errors),
-							_v18 = moves,
-							_v19 = _p11;
-						errors = _v17;
-						moves = _v18;
-						movesAndErrors = _v19;
+							_v20 = moves,
+							_v21 = _p11;
+						errors = _v19;
+						moves = _v20;
+						movesAndErrors = _v21;
 						continue splitMovesFromErrors$;
 					}
 				}
@@ -10976,7 +10987,7 @@ var _user$project$Main$drawShape = function (shape) {
 	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
 };
 var _user$project$Main$elm = _elm_lang$core$Native_List.fromArray(
-	['Left 90', 'Forward 150', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 120', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 100', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
+	['Left 90', 'PenUp', 'Forward 100', 'PenDown', 'Forward 50', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
 var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
 	['Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100']);
 var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
@@ -11062,6 +11073,8 @@ var _user$project$Main$DrawHouse = {ctor: 'DrawHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
 };
+var _user$project$Main$PenDown = {ctor: 'PenDown'};
+var _user$project$Main$PenUp = {ctor: 'PenUp'};
 var _user$project$Main$Right = function (a) {
 	return {ctor: 'Right', _0: a};
 };
@@ -11073,30 +11086,45 @@ var _user$project$Main$Forward = function (a) {
 };
 var _user$project$Main$parseCommand = function (command) {
 	var _p18 = A2(_elm_lang$core$String$split, ' ', command);
-	_v24_3:
+	_v26_5:
 	do {
-		if (((_p18.ctor === '::') && (_p18._1.ctor === '::')) && (_p18._1._1.ctor === '[]')) {
-			switch (_p18._0) {
-				case 'Forward':
-					return A2(
-						_elm_lang$core$Result$map,
-						_user$project$Main$Forward,
-						_elm_lang$core$String$toFloat(_p18._1._0));
-				case 'Left':
-					return A2(
-						_elm_lang$core$Result$map,
-						_user$project$Main$Left,
-						_elm_lang$core$String$toFloat(_p18._1._0));
-				case 'Right':
-					return A2(
-						_elm_lang$core$Result$map,
-						_user$project$Main$Right,
-						_elm_lang$core$String$toFloat(_p18._1._0));
-				default:
-					break _v24_3;
+		if (_p18.ctor === '::') {
+			if (_p18._1.ctor === '::') {
+				if (_p18._1._1.ctor === '[]') {
+					switch (_p18._0) {
+						case 'Forward':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Forward,
+								_elm_lang$core$String$toFloat(_p18._1._0));
+						case 'Left':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Left,
+								_elm_lang$core$String$toFloat(_p18._1._0));
+						case 'Right':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Right,
+								_elm_lang$core$String$toFloat(_p18._1._0));
+						default:
+							break _v26_5;
+					}
+				} else {
+					break _v26_5;
+				}
+			} else {
+				switch (_p18._0) {
+					case 'PenUp':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
+					case 'PenDown':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
+					default:
+						break _v26_5;
+				}
 			}
 		} else {
-			break _v24_3;
+			break _v26_5;
 		}
 	} while(false);
 	return _elm_lang$core$Result$Err('Could not parse the command');
@@ -11136,13 +11164,12 @@ var _user$project$Main$view = function (model) {
 								{ctor: '_Tuple2', _0: 'height', _1: '600px'},
 								{ctor: '_Tuple2', _0: 'float', _1: 'left'}
 							])),
-						_elm_lang$html$Html_Events$onInput(_user$project$Main$CommandsChange)
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$CommandsChange),
+						_elm_lang$html$Html_Attributes$value(
+						A2(_elm_lang$core$String$join, '\n', model.commands))
 					]),
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(
-						A2(_elm_lang$core$String$join, '\n', model.commands))
-					])),
+					[])),
 				_evancz$elm_graphics$Element$toHtml(
 				A3(
 					_evancz$elm_graphics$Collage$collage,

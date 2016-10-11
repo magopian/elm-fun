@@ -60,7 +60,10 @@ star =
 
 elm =
     [ "Left 90"
-    , "Forward 150"
+    , "PenUp"
+    , "Forward 100"
+    , "PenDown"
+    , "Forward 50"
     , "Right 90"
     , "Forward 100"
     , "Right 90"
@@ -76,13 +79,19 @@ elm =
     , "Left 90"
     , "Forward 50"
     , "Left 90"
-    , "Forward 120"
+    , "Forward 50"
+    , "PenUp"
+    , "Forward 50"
+    , "PenDown"
     , "Left 90"
     , "Forward 100"
     , "Left 180"
     , "Forward 100"
     , "Left 90"
-    , "Forward 100"
+    , "Forward 50"
+    , "PenUp"
+    , "Forward 50"
+    , "PenDown"
     , "Left 90"
     , "Forward 100"
     , "Right 140"
@@ -154,8 +163,9 @@ view model =
                     , ( "float", "left" )
                     ]
                 , Html.Events.onInput CommandsChange
+                , Html.Attributes.value <| String.join "\n" model.commands
                 ]
-                [ Html.text <| String.join "\n" model.commands ]
+                []
             , Element.toHtml <|
                 Collage.collage 600 600 <|
                     ((drawShape <| Collage.rect 600 600)
@@ -213,6 +223,8 @@ type Step
     = Forward Float
     | Left Angle
     | Right Angle
+    | PenUp
+    | PenDown
 
 
 drawShape : Collage.Shape -> Collage.Form
@@ -236,6 +248,12 @@ parseCommand command =
 
         [ "Right", angle ] ->
             Result.map Right (String.toFloat angle)
+
+        [ "PenUp" ] ->
+            Ok PenUp
+
+        [ "PenDown" ] ->
+            Ok PenDown
 
         _ ->
             Err "Could not parse the command"
@@ -284,8 +302,13 @@ splitMovesFromErrors movesAndErrors =
         splitMovesFromErrors' [] [] movesAndErrors
 
 
-toPath : Point -> Angle -> Step -> ( Point, Angle, Maybe Collage.Path )
-toPath (( x, y ) as currentPoint) currentAngle step =
+toPath :
+    Point
+    -> Angle
+    -> Bool
+    -> Step
+    -> ( Point, Angle, Bool, Maybe Collage.Path )
+toPath (( x, y ) as currentPoint) currentAngle draw step =
     case step of
         Forward amount ->
             let
@@ -296,14 +319,21 @@ toPath (( x, y ) as currentPoint) currentAngle step =
             in
                 ( newPoint
                 , currentAngle
+                , draw
                 , Just <| Collage.segment currentPoint newPoint
                 )
 
         Left angle ->
-            ( currentPoint, currentAngle + angle, Nothing )
+            ( currentPoint, currentAngle + angle, draw, Nothing )
 
         Right angle ->
-            ( currentPoint, currentAngle - angle, Nothing )
+            ( currentPoint, currentAngle - angle, draw, Nothing )
+
+        PenUp ->
+            ( currentPoint, currentAngle, False, Nothing )
+
+        PenDown ->
+            ( currentPoint, currentAngle, True, Nothing )
 
 
 movesToPaths : List Step -> List Collage.Path
@@ -312,31 +342,37 @@ movesToPaths moves =
         movesToPaths' :
             Point
             -> Angle
+            -> Bool
             -> List Collage.Path
             -> List Step
             -> List Collage.Path
-        movesToPaths' point angle paths moves =
+        movesToPaths' point angle draw paths moves =
             case moves of
                 head :: tail ->
                     let
-                        ( newPoint, newAngle, path ) =
-                            toPath point angle head
+                        ( newPoint, newAngle, newDraw, path ) =
+                            toPath point angle draw head
                     in
                         case path of
                             Nothing ->
-                                movesToPaths' newPoint newAngle paths tail
+                                movesToPaths' newPoint newAngle newDraw paths tail
 
                             Just segment ->
                                 movesToPaths'
                                     newPoint
                                     newAngle
-                                    (segment :: paths)
+                                    newDraw
+                                    (if newDraw then
+                                        (segment :: paths)
+                                     else
+                                        paths
+                                    )
                                     tail
 
                 [] ->
                     paths
     in
-        movesToPaths' (0, 0) 90 [] moves
+        movesToPaths' ( 0, 0 ) 90 True [] moves
 
 
 urlFromCommands : List String -> String
