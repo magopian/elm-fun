@@ -14,3 +14,4 @@ Implementing (parts of) the [Logo Turtle](https://en.wikipedia.org/wiki/Logo_(pr
 - [ ] Add a construct for loops
 - [x] Additional Turtle command: PenUp/PenDown
 - [ ] Additional Turtle command: PenColor
+- [x] Draw a Turtle

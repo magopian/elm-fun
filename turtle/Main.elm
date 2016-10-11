@@ -16,14 +16,28 @@ import String
 
 type Msg
     = CommandsChange String
-    | DrawHouse
-    | DrawStar
-    | DrawElm
+    | LoadHouse
+    | LoadStar
+    | LoadElm
+    | DrawTurtle Bool
 
 
 type alias Model =
     { commands : List String
+    , drawTurtle : Bool
     }
+
+
+turtle =
+    [ "Forward 10"
+    , "Right 155"
+    , "Forward 11.2"
+    , "Right 115"
+    , "Forward 9.4"
+    , "Right 115"
+    , "Forward 11.2"
+    , "Left 25"
+    ]
 
 
 house =
@@ -111,19 +125,19 @@ init : Flags -> ( Model, Cmd Msg )
 init { hash } =
     case hash of
         "" ->
-            ( { commands = house }, Cmd.none )
+            (Model house True) ! []
 
         hash ->
             case Base64.decode hash of
                 Ok commands ->
-                    ( { commands = String.split "\n" commands }, Cmd.none )
+                    (Model (String.split "\n" commands) True) ! []
 
                 Err msg ->
                     let
                         _ =
                             Debug.log "failed to decode hash" msg
                     in
-                        ( { commands = house }, Cmd.none )
+                        (Model house True) ! []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -132,14 +146,17 @@ update msg model =
         CommandsChange commands ->
             { model | commands = String.split "\n" commands } ! []
 
-        DrawHouse ->
+        LoadHouse ->
             { model | commands = house } ! []
 
-        DrawStar ->
+        LoadStar ->
             { model | commands = star } ! []
 
-        DrawElm ->
+        LoadElm ->
             { model | commands = elm } ! []
+
+        DrawTurtle bool ->
+            { model | drawTurtle = bool } ! []
 
 
 
@@ -149,8 +166,14 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
+        commands =
+            if model.drawTurtle then
+                (model.commands ++ turtle)
+            else
+                model.commands
+
         parsed =
-            commandsToMoves model.commands
+            commandsToMoves commands
 
         ( errors, moves ) =
             splitMovesFromErrors parsed
@@ -165,6 +188,19 @@ view model =
                     PenUp,
                     PenDown
                     """ ]
+            , Html.p
+                []
+                [ Html.label
+                    []
+                    [ Html.input
+                        [ Html.Attributes.type' "checkbox"
+                        , Html.Attributes.checked model.drawTurtle
+                        , Html.Events.onCheck DrawTurtle
+                        ]
+                        []
+                    , Html.text "Display the 'turtle'?"
+                    ]
+                ]
             , Html.textarea
                 [ Html.Attributes.style
                     [ ( "width", "600px" )
@@ -181,13 +217,13 @@ view model =
                         :: List.map drawPath (movesToPaths moves)
                     )
             , Html.button
-                [ Html.Events.onClick DrawHouse ]
+                [ Html.Events.onClick LoadHouse ]
                 [ Html.text "house" ]
             , Html.button
-                [ Html.Events.onClick DrawStar ]
+                [ Html.Events.onClick LoadStar ]
                 [ Html.text "star" ]
             , Html.button
-                [ Html.Events.onClick DrawElm ]
+                [ Html.Events.onClick LoadElm ]
                 [ Html.text "Elm" ]
             , Html.p
                 []

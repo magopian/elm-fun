@@ -10992,50 +10992,21 @@ var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
 	['Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100']);
 var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
 	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
-var _user$project$Main$init = function (_p12) {
-	var _p13 = _p12;
-	var _p14 = _p13.hash;
-	if (_p14 === '') {
-		return {
-			ctor: '_Tuple2',
-			_0: {commands: _user$project$Main$house},
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	} else {
-		var _p15 = _truqu$elm_base64$Base64$decode(_p14);
-		if (_p15.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: {
-					commands: A2(_elm_lang$core$String$split, '\n', _p15._0)
-				},
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			var _p16 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p15._0);
-			return {
-				ctor: '_Tuple2',
-				_0: {commands: _user$project$Main$house},
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	}
-};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p17 = msg;
-		switch (_p17.ctor) {
+		var _p12 = msg;
+		switch (_p12.ctor) {
 			case 'CommandsChange':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							commands: A2(_elm_lang$core$String$split, '\n', _p17._0)
+							commands: A2(_elm_lang$core$String$split, '\n', _p12._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			case 'DrawHouse':
+			case 'LoadHouse':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11043,7 +11014,7 @@ var _user$project$Main$update = F2(
 						{commands: _user$project$Main$house}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			case 'DrawStar':
+			case 'LoadStar':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11051,7 +11022,7 @@ var _user$project$Main$update = F2(
 						{commands: _user$project$Main$star}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			default:
+			case 'LoadElm':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11059,17 +11030,61 @@ var _user$project$Main$update = F2(
 						{commands: _user$project$Main$elm}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{drawTurtle: _p12._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
 		}
 	});
-var _user$project$Main$Model = function (a) {
-	return {commands: a};
+var _user$project$Main$turtle = _elm_lang$core$Native_List.fromArray(
+	['Forward 10', 'Right 155', 'Forward 11.2', 'Right 115', 'Forward 9.4', 'Right 115', 'Forward 11.2', 'Left 25']);
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {commands: a, drawTurtle: b};
+	});
+var _user$project$Main$init = function (_p13) {
+	var _p14 = _p13;
+	var _p15 = _p14.hash;
+	if (_p15 === '') {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			A2(_user$project$Main$Model, _user$project$Main$house, true),
+			_elm_lang$core$Native_List.fromArray(
+				[]));
+	} else {
+		var _p16 = _truqu$elm_base64$Base64$decode(_p15);
+		if (_p16.ctor === 'Ok') {
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				A2(
+					_user$project$Main$Model,
+					A2(_elm_lang$core$String$split, '\n', _p16._0),
+					true),
+				_elm_lang$core$Native_List.fromArray(
+					[]));
+		} else {
+			var _p17 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p16._0);
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				A2(_user$project$Main$Model, _user$project$Main$house, true),
+				_elm_lang$core$Native_List.fromArray(
+					[]));
+		}
+	}
 };
 var _user$project$Main$Flags = function (a) {
 	return {hash: a};
 };
-var _user$project$Main$DrawElm = {ctor: 'DrawElm'};
-var _user$project$Main$DrawStar = {ctor: 'DrawStar'};
-var _user$project$Main$DrawHouse = {ctor: 'DrawHouse'};
+var _user$project$Main$DrawTurtle = function (a) {
+	return {ctor: 'DrawTurtle', _0: a};
+};
+var _user$project$Main$LoadElm = {ctor: 'LoadElm'};
+var _user$project$Main$LoadStar = {ctor: 'LoadStar'};
+var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
 };
@@ -11143,7 +11158,8 @@ var _user$project$Main$commandsToMoves = function (commands) {
 		commands);
 };
 var _user$project$Main$view = function (model) {
-	var parsed = _user$project$Main$commandsToMoves(model.commands);
+	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
+	var parsed = _user$project$Main$commandsToMoves(commands);
 	var _p19 = _user$project$Main$splitMovesFromErrors(parsed);
 	var errors = _p19._0;
 	var moves = _p19._1;
@@ -11160,6 +11176,31 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text('Turtle commands:\n                    Forward <distance>,\n                    Left <angle>,\n                    Right <angle>,\n                    PenUp,\n                    PenDown\n                    ')
+					])),
+				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$label,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$input,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$type$('checkbox'),
+										_elm_lang$html$Html_Attributes$checked(model.drawTurtle),
+										_elm_lang$html$Html_Events$onCheck(_user$project$Main$DrawTurtle)
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[])),
+								_elm_lang$html$Html$text('Display the \'turtle\'?')
+							]))
 					])),
 				A2(
 				_elm_lang$html$Html$textarea,
@@ -11195,7 +11236,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawHouse)
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadHouse)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -11205,7 +11246,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawStar)
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadStar)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -11215,7 +11256,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Events$onClick(_user$project$Main$DrawElm)
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadElm)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
