@@ -11154,6 +11154,14 @@ var _user$project$Main$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Turtle commands:\n                    Forward <Int>,\n                    Left <Int>,\n                    Right <angle>,\n                    PenUp,\n                    PenDown\n                    ')
+					])),
+				A2(
 				_elm_lang$html$Html$textarea,
 				_elm_lang$core$Native_List.fromArray(
 					[
