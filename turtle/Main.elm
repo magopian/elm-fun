@@ -156,7 +156,16 @@ view model =
             splitMovesFromErrors parsed
     in
         Html.div []
-            [ Html.textarea
+            [ Html.p
+                []
+                [ Html.text """Turtle commands:
+                    Forward <Int>,
+                    Left <Int>,
+                    Right <angle>,
+                    PenUp,
+                    PenDown
+                    """ ]
+            , Html.textarea
                 [ Html.Attributes.style
                     [ ( "width", "600px" )
                     , ( "height", "600px" )
