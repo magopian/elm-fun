@@ -4,7 +4,7 @@
   "description": "Playing around with Elm, implementing a turtle",
   "main": "index.js",
   "scripts": {
-      "publish-to-gh-pages": "node_modules/.bin/gh-pages --dist ./ --src index.html --src */index.html"
+      "publish-to-gh-pages": "node_modules/.bin/gh-pages --dist ./ --src \"*/{index.html,elm.js}\""
   },
   "repository": {
     "type": "git",
