@@ -125,48 +125,7 @@ view model =
         parsed =
             commandsToMoves model.commands
 
-        errors =
-            parsed
-                |> List.filter
-                    (\( i, res ) ->
-                        case res of
-                            Ok _ ->
-                                False
-
-                            Err _ ->
-                                True
-                    )
-                |> List.map
-                    (\( i, res ) ->
-                        case res of
-                            Ok _ ->
-                                Debug.crash "we filtered, we can't be here"
-
-                            Err msg ->
-                                "Line " ++ (toString i) ++ ": " ++ msg
-                    )
-                |> String.join "\n"
-
-        moves =
-            parsed
-                |> List.filter
-                    (\( _, res ) ->
-                        case res of
-                            Ok move ->
-                                True
-
-                            Err _ ->
-                                False
-                    )
-                |> List.map
-                    (\( _, res ) ->
-                        case res of
-                            Ok move ->
-                                move
-
-                            Err _ ->
-                                Debug.crash "we filtered, we can't be here"
-                    )
+        (errors, moves) = splitMovesFromErrors parsed
     in
         Html.div []
             [ Html.textarea
@@ -192,7 +151,7 @@ view model =
             , Html.button
                 [ Html.Events.onClick DrawElm ]
                 [ Html.text "Elm" ]
-            , Html.pre [] [ Html.text errors ]
+            , Html.pre [] [ Html.text <| String.join "\n" errors ]
             ]
 
 
@@ -271,6 +230,38 @@ commandsToMoves commands =
             ( i, parseCommand command )
         )
         commands
+
+
+splitMovesFromErrors :
+    List ( Int, Result String Step )
+    -> ( List String, List Step )
+splitMovesFromErrors movesAndErrors =
+    let
+        splitMovesFromErrors' :
+            List String
+            -> List Step
+            -> List ( Int, Result String Step )
+            -> ( List String, List Step )
+        splitMovesFromErrors' errors moves movesAndErrors =
+            case movesAndErrors of
+                [] ->
+                    ( List.reverse errors, List.reverse moves )
+
+                head :: tail ->
+                    case head of
+                        ( _, Ok move ) ->
+                            splitMovesFromErrors'
+                                errors
+                                (move :: moves)
+                                tail
+
+                        ( i, Err msg ) ->
+                            splitMovesFromErrors'
+                                (("Line " ++ (toString i) ++ ": " ++ msg) :: errors)
+                                moves
+                                tail
+    in
+        splitMovesFromErrors' [] [] movesAndErrors
 
 
 toPath : Point -> Angle -> Step -> ( Point, Angle, Maybe Collage.Path )
