@@ -7971,34 +7971,51 @@ var _user$project$Main$setLedStatus = F4(
 		var updatedRow = A3(_elm_lang$core$Array$set, colIndex, status, row);
 		return A3(_elm_lang$core$Array$set, rowIndex, updatedRow, matrix);
 	});
+var _user$project$Main$loadSmiley = _elm_lang$core$String$trim('\n00000000\n00000000\n00100100\n00000000\n00000000\n01000010\n00111100\n00000000\n');
+var _user$project$Main$loadA = _elm_lang$core$String$trim('\n00011000\n00100100\n01000010\n01000010\n01111110\n01000010\n01000010\n01000010\n');
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
-		if (_p1.ctor === 'ToggleLed') {
-			var _p3 = _p1._0;
-			var _p2 = _p1._1;
-			var prevLedStatus = A3(_user$project$Main$getLedStatus, _p3, _p2, model.matrix);
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					matrix: A4(
-						_user$project$Main$setLedStatus,
-						_p3,
-						_p2,
-						_elm_lang$core$Basics$not(prevLedStatus),
-						model.matrix)
-				});
-		} else {
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					matrix: _user$project$Main$textToMatrix(_p1._0)
-				});
+		switch (_p1.ctor) {
+			case 'ToggleLed':
+				var _p3 = _p1._0;
+				var _p2 = _p1._1;
+				var prevLedStatus = A3(_user$project$Main$getLedStatus, _p3, _p2, model.matrix);
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: A4(
+							_user$project$Main$setLedStatus,
+							_p3,
+							_p2,
+							_elm_lang$core$Basics$not(prevLedStatus),
+							model.matrix)
+					});
+			case 'UpdateMatrix':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: _user$project$Main$textToMatrix(_p1._0)
+					});
+			case 'LoadA':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: _user$project$Main$textToMatrix(_user$project$Main$loadA)
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: _user$project$Main$textToMatrix(_user$project$Main$loadSmiley)
+					});
 		}
 	});
 var _user$project$Main$Model = function (a) {
 	return {matrix: a};
 };
+var _user$project$Main$LoadSmiley = {ctor: 'LoadSmiley'};
+var _user$project$Main$LoadA = {ctor: 'LoadA'};
 var _user$project$Main$UpdateMatrix = function (a) {
 	return {ctor: 'UpdateMatrix', _0: a};
 };
@@ -8089,7 +8106,34 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateMatrix)
 					]),
 				_elm_lang$core$Native_List.fromArray(
-					[]))
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadA)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('A')
+							])),
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadSmiley)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(':)')
+							]))
+					]))
 			]));
 };
 var _user$project$Main$main = {

@@ -8,12 +8,44 @@ import Html.Events
 import String
 
 
+-- Data
+
+
+loadA =
+    String.trim """
+00011000
+00100100
+01000010
+01000010
+01111110
+01000010
+01000010
+01000010
+"""
+
+
+loadSmiley =
+    String.trim """
+00000000
+00000000
+00100100
+00000000
+00000000
+01000010
+00111100
+00000000
+"""
+
+
+
 -- Model
 
 
 type Msg
     = ToggleLed RowIndex ColIndex
     | UpdateMatrix String
+    | LoadA
+    | LoadSmiley
 
 
 type alias RowIndex =
@@ -77,6 +109,16 @@ update msg model =
                 | matrix = textToMatrix text
             }
 
+        LoadA ->
+            { model
+                | matrix = textToMatrix loadA
+            }
+
+        LoadSmiley ->
+            { model
+                | matrix = textToMatrix loadSmiley
+            }
+
 
 getLedStatus : RowIndex -> ColIndex -> Matrix -> Bool
 getLedStatus row col matrix =
@@ -121,6 +163,15 @@ view model =
             , Html.Events.onInput UpdateMatrix
             ]
             []
+        , Html.div
+            []
+            [ Html.button
+                [ Html.Events.onClick LoadA ]
+                [ Html.text "A" ]
+            , Html.button
+                [ Html.Events.onClick LoadSmiley ]
+                [ Html.text ":)" ]
+            ]
         ]
 
 
@@ -171,7 +222,13 @@ matrixToText matrix =
         rowToText row =
             row
                 |> Array.toList
-                |> List.map (\b -> if b then "1" else "0")
+                |> List.map
+                    (\b ->
+                        if b then
+                            "1"
+                        else
+                            "0"
+                    )
                 |> String.join ""
     in
         matrix
