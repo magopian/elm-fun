@@ -13,6 +13,7 @@ import String
 
 type Msg
     = ToggleLed RowIndex ColIndex
+    | UpdateMatrix String
 
 
 type alias RowIndex =
@@ -40,11 +41,15 @@ type alias Model =
     }
 
 
+emptyRow =
+    Array.repeat 8 False
+
+
 initialModel : Model
 initialModel =
     let
         matrix =
-            Array.repeat 8 (Array.repeat 8 False)
+            Array.repeat 8 emptyRow
     in
         { matrix = Array.set 3 (Array.repeat 8 True) matrix }
 
@@ -67,12 +72,17 @@ update msg model =
                             |> setLedStatus row col (not prevLedStatus)
                 }
 
+        UpdateMatrix text ->
+            { model
+                | matrix = textToMatrix text
+            }
+
 
 getLedStatus : RowIndex -> ColIndex -> Matrix -> Bool
 getLedStatus row col matrix =
     matrix
         |> Array.get row
-        |> Maybe.withDefault (Array.repeat 8 False)
+        |> Maybe.withDefault emptyRow
         |> Array.get col
         |> Maybe.withDefault False
 
@@ -83,7 +93,7 @@ setLedStatus rowIndex colIndex status matrix =
         row =
             matrix
                 |> Array.get rowIndex
-                |> Maybe.withDefault (Array.repeat 8 False)
+                |> Maybe.withDefault emptyRow
 
         updatedRow =
             row
@@ -108,6 +118,7 @@ view model =
                 , ( "height", "300px" )
                 ]
             , Html.Attributes.value (matrixToText model.matrix)
+            , Html.Events.onInput UpdateMatrix
             ]
             []
         ]
@@ -160,13 +171,41 @@ matrixToText matrix =
         rowToText row =
             row
                 |> Array.toList
-                |> List.map toString
-                |> String.join ","
+                |> List.map (\b -> if b then "1" else "0")
+                |> String.join ""
     in
         matrix
             |> Array.map rowToText
             |> Array.toList
             |> String.join "\n"
+
+
+stringToBool : String -> Bool
+stringToBool string =
+    case string of
+        "1" ->
+            True
+
+        _ ->
+            False
+
+
+textToMatrix : String -> Matrix
+textToMatrix text =
+    let
+        rows =
+            String.lines text
+                |> Array.fromList
+
+        lineToBools row =
+            row
+                |> String.toList
+                |> List.map String.fromChar
+                |> Array.fromList
+                |> Array.map stringToBool
+    in
+        rows
+            |> Array.map lineToBools
 
 
 

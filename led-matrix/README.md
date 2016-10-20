@@ -6,8 +6,8 @@ Implementing a led matrix display.
 
 ## ToDo / Ideas
 
-- [ ] display points (bitmap) on an 8x8 led matrix
-- [ ] generate the 8x8 matrix based on mouse clicks
+- [x] display points (bitmap) on an 8x8 led matrix
+- [x] generate the 8x8 matrix based on mouse clicks
 - [ ] display an ascii character on an 8x8 led matrix
 - [ ] display any unicode character (convert to/from svg?)
 - [ ] effects and transitions:
