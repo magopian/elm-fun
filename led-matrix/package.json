@@ -1,0 +1,24 @@
+{
+  "name": "led-matrix",
+  "version": "1.0.0",
+  "description": "Playing around with Elm, implementing a led matrix display",
+  "main": "index.js",
+  "scripts": {
+    "start": "node_modules/.bin/elm-reactor",
+    "live": "node_modules/.bin/elm-live Main.elm --output=elm.js --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magopian/elm-fun.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/magopian/elm-fun/issues"
+  },
+  "homepage": "https://github.com/magopian/elm-fun#readme",
+  "devDependencies": {
+    "elm": "^0.17.1",
+    "elm-live": "^2.5.0"
+  }
+}
