@@ -7897,14 +7897,39 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _user$project$Main$stringToBool = function (string) {
+	var _p0 = string;
+	if (_p0 === '1') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Main$textToMatrix = function (text) {
+	var lineToBools = function (row) {
+		return A2(
+			_elm_lang$core$Array$map,
+			_user$project$Main$stringToBool,
+			_elm_lang$core$Array$fromList(
+				A2(
+					_elm_lang$core$List$map,
+					_elm_lang$core$String$fromChar,
+					_elm_lang$core$String$toList(row))));
+	};
+	var rows = _elm_lang$core$Array$fromList(
+		_elm_lang$core$String$lines(text));
+	return A2(_elm_lang$core$Array$map, lineToBools, rows);
+};
 var _user$project$Main$matrixToText = function (matrix) {
 	var rowToText = function (row) {
 		return A2(
 			_elm_lang$core$String$join,
-			',',
+			'',
 			A2(
 				_elm_lang$core$List$map,
-				_elm_lang$core$Basics$toString,
+				function (b) {
+					return b ? '1' : '0';
+				},
 				_elm_lang$core$Array$toList(row)));
 	};
 	return A2(
@@ -7913,15 +7938,17 @@ var _user$project$Main$matrixToText = function (matrix) {
 		_elm_lang$core$Array$toList(
 			A2(_elm_lang$core$Array$map, rowToText, matrix)));
 };
-var _user$project$Main$setLedStatus = F4(
-	function (rowIndex, colIndex, status, matrix) {
-		var row = A2(
-			_elm_lang$core$Maybe$withDefault,
-			A2(_elm_lang$core$Array$repeat, 8, false),
-			A2(_elm_lang$core$Array$get, rowIndex, matrix));
-		var updatedRow = A3(_elm_lang$core$Array$set, colIndex, status, row);
-		return A3(_elm_lang$core$Array$set, rowIndex, updatedRow, matrix);
-	});
+var _user$project$Main$emptyRow = A2(_elm_lang$core$Array$repeat, 8, false);
+var _user$project$Main$initialModel = function () {
+	var matrix = A2(_elm_lang$core$Array$repeat, 8, _user$project$Main$emptyRow);
+	return {
+		matrix: A3(
+			_elm_lang$core$Array$set,
+			3,
+			A2(_elm_lang$core$Array$repeat, 8, true),
+			matrix)
+	};
+}();
 var _user$project$Main$getLedStatus = F3(
 	function (row, col, matrix) {
 		return A2(
@@ -7932,41 +7959,48 @@ var _user$project$Main$getLedStatus = F3(
 				col,
 				A2(
 					_elm_lang$core$Maybe$withDefault,
-					A2(_elm_lang$core$Array$repeat, 8, false),
+					_user$project$Main$emptyRow,
 					A2(_elm_lang$core$Array$get, row, matrix))));
+	});
+var _user$project$Main$setLedStatus = F4(
+	function (rowIndex, colIndex, status, matrix) {
+		var row = A2(
+			_elm_lang$core$Maybe$withDefault,
+			_user$project$Main$emptyRow,
+			A2(_elm_lang$core$Array$get, rowIndex, matrix));
+		var updatedRow = A3(_elm_lang$core$Array$set, colIndex, status, row);
+		return A3(_elm_lang$core$Array$set, rowIndex, updatedRow, matrix);
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		var _p2 = _p0._0;
-		var _p1 = _p0._1;
-		var prevLedStatus = A3(_user$project$Main$getLedStatus, _p2, _p1, model.matrix);
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				matrix: A4(
-					_user$project$Main$setLedStatus,
-					_p2,
-					_p1,
-					_elm_lang$core$Basics$not(prevLedStatus),
-					model.matrix)
-			});
+		var _p1 = msg;
+		if (_p1.ctor === 'ToggleLed') {
+			var _p3 = _p1._0;
+			var _p2 = _p1._1;
+			var prevLedStatus = A3(_user$project$Main$getLedStatus, _p3, _p2, model.matrix);
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					matrix: A4(
+						_user$project$Main$setLedStatus,
+						_p3,
+						_p2,
+						_elm_lang$core$Basics$not(prevLedStatus),
+						model.matrix)
+				});
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					matrix: _user$project$Main$textToMatrix(_p1._0)
+				});
+		}
 	});
-var _user$project$Main$initialModel = function () {
-	var matrix = A2(
-		_elm_lang$core$Array$repeat,
-		8,
-		A2(_elm_lang$core$Array$repeat, 8, false));
-	return {
-		matrix: A3(
-			_elm_lang$core$Array$set,
-			3,
-			A2(_elm_lang$core$Array$repeat, 8, true),
-			matrix)
-	};
-}();
 var _user$project$Main$Model = function (a) {
 	return {matrix: a};
+};
+var _user$project$Main$UpdateMatrix = function (a) {
+	return {ctor: 'UpdateMatrix', _0: a};
 };
 var _user$project$Main$ToggleLed = F2(
 	function (a, b) {
@@ -8051,7 +8085,8 @@ var _user$project$Main$view = function (model) {
 								{ctor: '_Tuple2', _0: 'height', _1: '300px'}
 							])),
 						_elm_lang$html$Html_Attributes$value(
-						_user$project$Main$matrixToText(model.matrix))
+						_user$project$Main$matrixToText(model.matrix)),
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateMatrix)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[]))
