@@ -7985,7 +7985,8 @@ var _user$project$Main$initialModel = {
 	matrix: _user$project$Main$textToMatrix(
 		A2(_user$project$Main$loadEmpty, 8, 8)),
 	matrixWidth: 8,
-	matrixHeight: 8
+	matrixHeight: 8,
+	enforceSquare: true
 };
 var _user$project$Main$loadFull = F2(
 	function (width, height) {
@@ -8059,34 +8060,45 @@ var _user$project$Main$update = F2(
 					return model;
 				} else {
 					var _p6 = _p5._0;
+					var height = model.enforceSquare ? _p6 : model.matrixHeight;
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							matrix: _user$project$Main$textToMatrix(
-								A2(_user$project$Main$loadEmpty, _p6, model.matrixHeight)),
-							matrixWidth: _p6
+								A2(_user$project$Main$loadEmpty, _p6, height)),
+							matrixWidth: _p6,
+							matrixHeight: height
 						});
 				}
-			default:
+			case 'ChangeMatrixHeight':
 				var _p7 = _elm_lang$core$String$toInt(_p1._0);
 				if (_p7.ctor === 'Err') {
 					return model;
 				} else {
 					var _p8 = _p7._0;
+					var width = model.enforceSquare ? _p8 : model.matrixWidth;
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							matrix: _user$project$Main$textToMatrix(
-								A2(_user$project$Main$loadEmpty, model.matrixWidth, _p8)),
+								A2(_user$project$Main$loadEmpty, width, _p8)),
+							matrixWidth: width,
 							matrixHeight: _p8
 						});
 				}
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{enforceSquare: _p1._0});
 		}
 	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {matrix: a, matrixWidth: b, matrixHeight: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {matrix: a, matrixWidth: b, matrixHeight: c, enforceSquare: d};
 	});
+var _user$project$Main$ChangeEnforceSquare = function (a) {
+	return {ctor: 'ChangeEnforceSquare', _0: a};
+};
 var _user$project$Main$ChangeMatrixHeight = function (a) {
 	return {ctor: 'ChangeMatrixHeight', _0: a};
 };
@@ -8171,6 +8183,24 @@ var _user$project$Main$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Matrix stays a square: '),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$type$('checkbox'),
+								_elm_lang$html$Html_Attributes$checked(model.enforceSquare),
+								_elm_lang$html$Html_Events$onCheck(_user$project$Main$ChangeEnforceSquare)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
 				A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(

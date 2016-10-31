@@ -71,6 +71,7 @@ type Msg
     | LoadFull
     | ChangeMatrixWidth String
     | ChangeMatrixHeight String
+    | ChangeEnforceSquare Bool
 
 
 type alias RowIndex =
@@ -97,6 +98,7 @@ type alias Model =
     { matrix : Matrix
     , matrixWidth : Int
     , matrixHeight : Int
+    , enforceSquare : Bool
     }
 
 
@@ -107,7 +109,7 @@ emptyRow size =
 
 initialModel : Model
 initialModel =
-    { matrix = textToMatrix (loadEmpty 8 8), matrixWidth = 8, matrixHeight = 8 }
+    { matrix = textToMatrix (loadEmpty 8 8), matrixWidth = 8, matrixHeight = 8, enforceSquare = True }
 
 
 
@@ -189,10 +191,18 @@ update msg model =
                     model
 
                 Ok width ->
-                    { model
-                        | matrix = textToMatrix (loadEmpty width model.matrixHeight)
-                        , matrixWidth = width
-                    }
+                    let
+                        height =
+                            if model.enforceSquare then
+                                width
+                            else
+                                model.matrixHeight
+                    in
+                        { model
+                            | matrix = textToMatrix (loadEmpty width height)
+                            , matrixWidth = width
+                            , matrixHeight = height
+                        }
 
         ChangeMatrixHeight newHeight ->
             case String.toInt newHeight of
@@ -200,10 +210,21 @@ update msg model =
                     model
 
                 Ok height ->
-                    { model
-                        | matrix = textToMatrix (loadEmpty model.matrixWidth height)
-                        , matrixHeight = height
-                    }
+                    let
+                        width =
+                            if model.enforceSquare then
+                                height
+                            else
+                                model.matrixWidth
+                    in
+                        { model
+                            | matrix = textToMatrix (loadEmpty width height)
+                            , matrixWidth = width
+                            , matrixHeight = height
+                        }
+
+        ChangeEnforceSquare checked ->
+            { model | enforceSquare = checked }
 
 
 getLedStatus : RowIndex -> ColIndex -> Model -> Bool
@@ -240,6 +261,17 @@ view model =
     Html.div
         []
         [ Html.div
+            []
+            [ Html.text
+                "Matrix stays a square: "
+            , Html.input
+                [ Html.Attributes.type' "checkbox"
+                , Html.Attributes.checked model.enforceSquare
+                , Html.Events.onCheck ChangeEnforceSquare
+                ]
+                []
+            ]
+        , Html.div
             []
             [ Html.text
                 "Matrix width: "
