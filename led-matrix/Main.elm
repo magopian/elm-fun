@@ -11,6 +11,7 @@ import String
 -- Data
 
 
+loadA : String
 loadA =
     String.trim """
 00011000
@@ -24,6 +25,7 @@ loadA =
 """
 
 
+loadSmiley : String
 loadSmiley =
     String.trim """
 00000000
@@ -37,6 +39,32 @@ loadSmiley =
 """
 
 
+loadEmpty : Int -> String
+loadEmpty size =
+    "0"
+        |> String.repeat size
+        -- A row of <size> columns
+        |>
+            (++) "\n"
+        |> String.repeat size
+        -- <size> rows
+        |>
+            String.trim
+
+
+loadFull : Int -> String
+loadFull size =
+    "1"
+        |> String.repeat size
+        -- A row of <size> columns
+        |>
+            (++) "\n"
+        |> String.repeat size
+        -- <size> rows
+        |>
+            String.trim
+
+
 
 -- Model
 
@@ -46,6 +74,9 @@ type Msg
     | UpdateMatrix String
     | LoadA
     | LoadSmiley
+    | LoadEmpty
+    | LoadFull
+    | ChangeMatrixSize String
 
 
 type alias RowIndex =
@@ -70,20 +101,18 @@ type alias Matrix =
 
 type alias Model =
     { matrix : Matrix
+    , matrixSize : Int
     }
 
 
-emptyRow =
-    Array.repeat 8 False
+emptyRow : Int -> Array.Array Bool
+emptyRow size =
+    Array.repeat size False
 
 
 initialModel : Model
 initialModel =
-    let
-        matrix =
-            Array.repeat 8 emptyRow
-    in
-        { matrix = Array.set 3 (Array.repeat 8 True) matrix }
+    { matrix = textToMatrix (loadEmpty 8), matrixSize = 8 }
 
 
 
@@ -105,26 +134,60 @@ update msg model =
                 }
 
         UpdateMatrix text ->
-            { model
-                | matrix = textToMatrix text
-            }
+            let
+                newMatrix =
+                    textToMatrix text
+            in
+                { model
+                    | matrix = newMatrix
+                    , matrixSize = Array.length newMatrix
+                }
 
         LoadA ->
-            { model
-                | matrix = textToMatrix loadA
-            }
+            let
+                newMatrix =
+                    textToMatrix loadA
+            in
+                { model
+                    | matrix = newMatrix
+                    , matrixSize = Array.length newMatrix
+                }
 
         LoadSmiley ->
+            let
+                newMatrix =
+                    textToMatrix loadSmiley
+            in
+                { model
+                    | matrix = newMatrix
+                    , matrixSize = Array.length newMatrix
+                }
+
+        LoadEmpty ->
             { model
-                | matrix = textToMatrix loadSmiley
+                | matrix = textToMatrix (loadEmpty model.matrixSize)
             }
+
+        LoadFull ->
+            { model | matrix = textToMatrix (loadFull model.matrixSize) }
+
+        ChangeMatrixSize newSize ->
+            case String.toInt newSize of
+                Err msg ->
+                    model
+
+                Ok size ->
+                    { model
+                        | matrix = textToMatrix (loadEmpty size)
+                        , matrixSize = size
+                    }
 
 
 getLedStatus : RowIndex -> ColIndex -> Matrix -> Bool
 getLedStatus row col matrix =
     matrix
         |> Array.get row
-        |> Maybe.withDefault emptyRow
+        |> Maybe.withDefault (emptyRow (Array.length matrix))
         |> Array.get col
         |> Maybe.withDefault False
 
@@ -135,7 +198,7 @@ setLedStatus rowIndex colIndex status matrix =
         row =
             matrix
                 |> Array.get rowIndex
-                |> Maybe.withDefault emptyRow
+                |> Maybe.withDefault (emptyRow (Array.length matrix))
 
         updatedRow =
             row
@@ -153,7 +216,26 @@ view : Model -> Html.Html Msg
 view model =
     Html.div
         []
-        [ displayMatrix model.matrix
+        [ Html.div
+            []
+            [ Html.text
+                "Matrix size: "
+            , Html.input
+                [ Html.Attributes.type' "range"
+                , Html.Attributes.value <| toString model.matrixSize
+                , Html.Attributes.min "1"
+                , Html.Attributes.max "32"
+                , Html.Events.onInput ChangeMatrixSize
+                ]
+                []
+            , Html.input
+                [ Html.Attributes.value <|
+                    toString model.matrixSize
+                , Html.Events.onInput ChangeMatrixSize
+                ]
+                []
+            ]
+        , displayMatrix model.matrix
         , Html.textarea
             [ Html.Attributes.style
                 [ ( "width", "500px" )
@@ -171,6 +253,12 @@ view model =
             , Html.button
                 [ Html.Events.onClick LoadSmiley ]
                 [ Html.text ":)" ]
+            , Html.button
+                [ Html.Events.onClick LoadEmpty ]
+                [ Html.text "Empty" ]
+            , Html.button
+                [ Html.Events.onClick LoadFull ]
+                [ Html.text "Full" ]
             ]
         ]
 
@@ -269,6 +357,7 @@ textToMatrix text =
 -- Main
 
 
+main : Program Never
 main =
     Html.App.beginnerProgram
         { model = initialModel

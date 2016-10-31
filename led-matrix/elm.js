@@ -7938,17 +7938,9 @@ var _user$project$Main$matrixToText = function (matrix) {
 		_elm_lang$core$Array$toList(
 			A2(_elm_lang$core$Array$map, rowToText, matrix)));
 };
-var _user$project$Main$emptyRow = A2(_elm_lang$core$Array$repeat, 8, false);
-var _user$project$Main$initialModel = function () {
-	var matrix = A2(_elm_lang$core$Array$repeat, 8, _user$project$Main$emptyRow);
-	return {
-		matrix: A3(
-			_elm_lang$core$Array$set,
-			3,
-			A2(_elm_lang$core$Array$repeat, 8, true),
-			matrix)
-	};
-}();
+var _user$project$Main$emptyRow = function (size) {
+	return A2(_elm_lang$core$Array$repeat, size, false);
+};
 var _user$project$Main$getLedStatus = F3(
 	function (row, col, matrix) {
 		return A2(
@@ -7959,18 +7951,51 @@ var _user$project$Main$getLedStatus = F3(
 				col,
 				A2(
 					_elm_lang$core$Maybe$withDefault,
-					_user$project$Main$emptyRow,
+					_user$project$Main$emptyRow(
+						_elm_lang$core$Array$length(matrix)),
 					A2(_elm_lang$core$Array$get, row, matrix))));
 	});
 var _user$project$Main$setLedStatus = F4(
 	function (rowIndex, colIndex, status, matrix) {
 		var row = A2(
 			_elm_lang$core$Maybe$withDefault,
-			_user$project$Main$emptyRow,
+			_user$project$Main$emptyRow(
+				_elm_lang$core$Array$length(matrix)),
 			A2(_elm_lang$core$Array$get, rowIndex, matrix));
 		var updatedRow = A3(_elm_lang$core$Array$set, colIndex, status, row);
 		return A3(_elm_lang$core$Array$set, rowIndex, updatedRow, matrix);
 	});
+var _user$project$Main$loadFull = function (size) {
+	return _elm_lang$core$String$trim(
+		A2(
+			_elm_lang$core$String$repeat,
+			size,
+			A2(
+				F2(
+					function (x, y) {
+						return A2(_elm_lang$core$Basics_ops['++'], x, y);
+					}),
+				'\n',
+				A2(_elm_lang$core$String$repeat, size, '1'))));
+};
+var _user$project$Main$loadEmpty = function (size) {
+	return _elm_lang$core$String$trim(
+		A2(
+			_elm_lang$core$String$repeat,
+			size,
+			A2(
+				F2(
+					function (x, y) {
+						return A2(_elm_lang$core$Basics_ops['++'], x, y);
+					}),
+				'\n',
+				A2(_elm_lang$core$String$repeat, size, '0'))));
+};
+var _user$project$Main$initialModel = {
+	matrix: _user$project$Main$textToMatrix(
+		_user$project$Main$loadEmpty(8)),
+	matrixSize: 8
+};
 var _user$project$Main$loadSmiley = _elm_lang$core$String$trim('\n00000000\n00000000\n00100100\n00000000\n00000000\n01000010\n00111100\n00000000\n');
 var _user$project$Main$loadA = _elm_lang$core$String$trim('\n00011000\n00100100\n01000010\n01000010\n01111110\n01000010\n01000010\n01000010\n');
 var _user$project$Main$update = F2(
@@ -7992,28 +8017,68 @@ var _user$project$Main$update = F2(
 							model.matrix)
 					});
 			case 'UpdateMatrix':
+				var newMatrix = _user$project$Main$textToMatrix(_p1._0);
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
-						matrix: _user$project$Main$textToMatrix(_p1._0)
+						matrix: newMatrix,
+						matrixSize: _elm_lang$core$Array$length(newMatrix)
 					});
 			case 'LoadA':
+				var newMatrix = _user$project$Main$textToMatrix(_user$project$Main$loadA);
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
-						matrix: _user$project$Main$textToMatrix(_user$project$Main$loadA)
+						matrix: newMatrix,
+						matrixSize: _elm_lang$core$Array$length(newMatrix)
+					});
+			case 'LoadSmiley':
+				var newMatrix = _user$project$Main$textToMatrix(_user$project$Main$loadSmiley);
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: newMatrix,
+						matrixSize: _elm_lang$core$Array$length(newMatrix)
+					});
+			case 'LoadEmpty':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: _user$project$Main$textToMatrix(
+							_user$project$Main$loadEmpty(model.matrixSize))
+					});
+			case 'LoadFull':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						matrix: _user$project$Main$textToMatrix(
+							_user$project$Main$loadFull(model.matrixSize))
 					});
 			default:
-				return _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						matrix: _user$project$Main$textToMatrix(_user$project$Main$loadSmiley)
-					});
+				var _p4 = _elm_lang$core$String$toInt(_p1._0);
+				if (_p4.ctor === 'Err') {
+					return model;
+				} else {
+					var _p5 = _p4._0;
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							matrix: _user$project$Main$textToMatrix(
+								_user$project$Main$loadEmpty(_p5)),
+							matrixSize: _p5
+						});
+				}
 		}
 	});
-var _user$project$Main$Model = function (a) {
-	return {matrix: a};
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {matrix: a, matrixSize: b};
+	});
+var _user$project$Main$ChangeMatrixSize = function (a) {
+	return {ctor: 'ChangeMatrixSize', _0: a};
 };
+var _user$project$Main$LoadFull = {ctor: 'LoadFull'};
+var _user$project$Main$LoadEmpty = {ctor: 'LoadEmpty'};
 var _user$project$Main$LoadSmiley = {ctor: 'LoadSmiley'};
 var _user$project$Main$LoadA = {ctor: 'LoadA'};
 var _user$project$Main$UpdateMatrix = function (a) {
@@ -8090,6 +8155,37 @@ var _user$project$Main$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Matrix size: '),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$type$('range'),
+								_elm_lang$html$Html_Attributes$value(
+								_elm_lang$core$Basics$toString(model.matrixSize)),
+								_elm_lang$html$Html_Attributes$min('1'),
+								_elm_lang$html$Html_Attributes$max('32'),
+								_elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeMatrixSize)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$value(
+								_elm_lang$core$Basics$toString(model.matrixSize)),
+								_elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeMatrixSize)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
 				_user$project$Main$displayMatrix(model.matrix),
 				A2(
 				_elm_lang$html$Html$textarea,
@@ -8132,6 +8228,26 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html$text(':)')
+							])),
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadEmpty)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Empty')
+							])),
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$LoadFull)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Full')
 							]))
 					]))
 			]));
