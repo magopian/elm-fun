@@ -39,30 +39,23 @@ loadSmiley =
 """
 
 
-loadEmpty : Int -> String
-loadEmpty size =
-    "0"
-        |> String.repeat size
-        -- A row of <size> columns
-        |>
-            (++) "\n"
-        |> String.repeat size
-        -- <size> rows
-        |>
-            String.trim
+loadSame : Int -> Int -> String -> String
+loadSame width height value =
+    value
+        |> String.repeat width
+        |> (++) "\n"
+        |> String.repeat height
+        |> String.trim
 
 
-loadFull : Int -> String
-loadFull size =
-    "1"
-        |> String.repeat size
-        -- A row of <size> columns
-        |>
-            (++) "\n"
-        |> String.repeat size
-        -- <size> rows
-        |>
-            String.trim
+loadEmpty : Int -> Int -> String
+loadEmpty width height =
+    loadSame width height "0"
+
+
+loadFull : Int -> Int -> String
+loadFull width height =
+    loadSame width height "1"
 
 
 
@@ -76,7 +69,8 @@ type Msg
     | LoadSmiley
     | LoadEmpty
     | LoadFull
-    | ChangeMatrixSize String
+    | ChangeMatrixWidth String
+    | ChangeMatrixHeight String
 
 
 type alias RowIndex =
@@ -101,7 +95,8 @@ type alias Matrix =
 
 type alias Model =
     { matrix : Matrix
-    , matrixSize : Int
+    , matrixWidth : Int
+    , matrixHeight : Int
     }
 
 
@@ -112,7 +107,7 @@ emptyRow size =
 
 initialModel : Model
 initialModel =
-    { matrix = textToMatrix (loadEmpty 8), matrixSize = 8 }
+    { matrix = textToMatrix (loadEmpty 8 8), matrixWidth = 8, matrixHeight = 8 }
 
 
 
@@ -125,86 +120,114 @@ update msg model =
         ToggleLed row col ->
             let
                 prevLedStatus =
-                    getLedStatus row col model.matrix
+                    getLedStatus row col model
             in
                 { model
                     | matrix =
-                        model.matrix
+                        model
                             |> setLedStatus row col (not prevLedStatus)
                 }
 
         UpdateMatrix text ->
             let
+                lines =
+                    String.split "\n" text
+
+                max_width =
+                    lines
+                        |> List.map String.length
+                        |> List.foldr max 0
+
                 newMatrix =
                     textToMatrix text
             in
                 { model
                     | matrix = newMatrix
-                    , matrixSize = Array.length newMatrix
+                    , matrixWidth = max_width
+                    , matrixHeight = Array.length newMatrix
                 }
 
         LoadA ->
             let
                 newMatrix =
                     textToMatrix loadA
+
+                size =
+                    Array.length newMatrix
             in
                 { model
                     | matrix = newMatrix
-                    , matrixSize = Array.length newMatrix
+                    , matrixWidth = size
+                    , matrixHeight = size
                 }
 
         LoadSmiley ->
             let
                 newMatrix =
                     textToMatrix loadSmiley
+
+                size =
+                    Array.length newMatrix
             in
                 { model
                     | matrix = newMatrix
-                    , matrixSize = Array.length newMatrix
+                    , matrixWidth = size
+                    , matrixHeight = size
                 }
 
         LoadEmpty ->
             { model
-                | matrix = textToMatrix (loadEmpty model.matrixSize)
+                | matrix = textToMatrix (loadEmpty model.matrixWidth model.matrixHeight)
             }
 
         LoadFull ->
-            { model | matrix = textToMatrix (loadFull model.matrixSize) }
+            { model | matrix = textToMatrix (loadFull model.matrixWidth model.matrixHeight) }
 
-        ChangeMatrixSize newSize ->
-            case String.toInt newSize of
+        ChangeMatrixWidth newWidth ->
+            case String.toInt newWidth of
                 Err msg ->
                     model
 
-                Ok size ->
+                Ok width ->
                     { model
-                        | matrix = textToMatrix (loadEmpty size)
-                        , matrixSize = size
+                        | matrix = textToMatrix (loadEmpty width model.matrixHeight)
+                        , matrixWidth = width
+                    }
+
+        ChangeMatrixHeight newHeight ->
+            case String.toInt newHeight of
+                Err msg ->
+                    model
+
+                Ok height ->
+                    { model
+                        | matrix = textToMatrix (loadEmpty model.matrixWidth height)
+                        , matrixHeight = height
                     }
 
 
-getLedStatus : RowIndex -> ColIndex -> Matrix -> Bool
-getLedStatus row col matrix =
-    matrix
+getLedStatus : RowIndex -> ColIndex -> Model -> Bool
+getLedStatus row col model =
+    model.matrix
         |> Array.get row
-        |> Maybe.withDefault (emptyRow (Array.length matrix))
+        |> Maybe.withDefault (emptyRow model.matrixWidth)
         |> Array.get col
         |> Maybe.withDefault False
 
 
-setLedStatus : RowIndex -> ColIndex -> Bool -> Matrix -> Matrix
-setLedStatus rowIndex colIndex status matrix =
+setLedStatus : RowIndex -> ColIndex -> Bool -> Model -> Matrix
+setLedStatus rowIndex colIndex status model =
     let
         row =
-            matrix
+            model.matrix
                 |> Array.get rowIndex
-                |> Maybe.withDefault (emptyRow (Array.length matrix))
+                |> Maybe.withDefault (emptyRow model.matrixWidth)
 
         updatedRow =
             row
                 |> Array.set colIndex status
     in
-        matrix
+        model.matrix
             |> Array.set rowIndex updatedRow
 
 
@@ -219,19 +242,38 @@ view model =
         [ Html.div
             []
             [ Html.text
-                "Matrix size: "
+                "Matrix width: "
             , Html.input
                 [ Html.Attributes.type' "range"
-                , Html.Attributes.value <| toString model.matrixSize
+                , Html.Attributes.value <| toString model.matrixWidth
                 , Html.Attributes.min "1"
                 , Html.Attributes.max "32"
-                , Html.Events.onInput ChangeMatrixSize
+                , Html.Events.onInput ChangeMatrixWidth
                 ]
                 []
             , Html.input
                 [ Html.Attributes.value <|
-                    toString model.matrixSize
-                , Html.Events.onInput ChangeMatrixSize
+                    toString model.matrixWidth
+                , Html.Events.onInput ChangeMatrixWidth
+                ]
+                []
+            ]
+        , Html.div
+            []
+            [ Html.text
+                "Matrix height: "
+            , Html.input
+                [ Html.Attributes.type' "range"
+                , Html.Attributes.value <| toString model.matrixHeight
+                , Html.Attributes.min "1"
+                , Html.Attributes.max "32"
+                , Html.Events.onInput ChangeMatrixHeight
+                ]
+                []
+            , Html.input
+                [ Html.Attributes.value <|
+                    toString model.matrixHeight
+                , Html.Events.onInput ChangeMatrixHeight
                 ]
                 []
             ]
