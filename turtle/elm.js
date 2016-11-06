@@ -11178,78 +11178,40 @@ var _user$project$Main$movesToPaths = function (moves) {
 			[]),
 		moves);
 };
-var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
-	var splitMovesFromErrors$ = F3(
-		function (errors, moves, movesAndErrors) {
-			splitMovesFromErrors$:
-			while (true) {
-				var _p10 = movesAndErrors;
-				if (_p10.ctor === '[]') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$List$reverse(errors),
-						_1: _elm_lang$core$List$reverse(moves)
-					};
-				} else {
-					var _p12 = _p10._1;
-					var _p11 = _p10._0;
-					if (_p11._1.ctor === 'Ok') {
-						var _v17 = errors,
-							_v18 = A2(_elm_lang$core$List_ops['::'], _p11._1._0, moves),
-							_v19 = _p12;
-						errors = _v17;
-						moves = _v18;
-						movesAndErrors = _v19;
-						continue splitMovesFromErrors$;
-					} else {
-						var _v20 = A2(
-							_elm_lang$core$List_ops['::'],
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Line ',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p11._0),
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										': ',
-										_elm_lang$core$Basics$toString(_p11._1._0)))),
-							errors),
-							_v21 = moves,
-							_v22 = _p12;
-						errors = _v20;
-						moves = _v21;
-						movesAndErrors = _v22;
-						continue splitMovesFromErrors$;
-					}
-				}
-			}
-		});
-	return A3(
-		splitMovesFromErrors$,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		movesAndErrors);
-};
 var _user$project$Main$drawPath = function (path) {
 	return A2(_evancz$elm_graphics$Collage$traced, _evancz$elm_graphics$Collage$defaultLine, path);
 };
 var _user$project$Main$drawShape = function (shape) {
 	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
 };
+var _user$project$Main$translateError = F2(
+	function (lang, _p10) {
+		var _p11 = _p10;
+		var _p13 = _p11.line;
+		var _p12 = _p11.error;
+		if (_p12.ctor === 'ParseCommandError') {
+			return A2(
+				_user$project$Translation$translate,
+				lang,
+				A2(_user$project$Translation$ParseCommandError, _p13, _p12._0));
+		} else {
+			return A2(
+				_user$project$Translation$translate,
+				lang,
+				A2(_user$project$Translation$ParseFloatError, _p13, _p12._0));
+		}
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p13 = msg;
-		switch (_p13.ctor) {
+		var _p14 = msg;
+		switch (_p14.ctor) {
 			case 'CommandsChange':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							commands: A2(_elm_lang$core$String$split, '\n', _p13._0)
+							commands: A2(_elm_lang$core$String$split, '\n', _p14._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -11288,7 +11250,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{drawTurtle: _p13._0}),
+						{drawTurtle: _p14._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			default:
@@ -11296,23 +11258,73 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{lang: _p13._0}),
+						{lang: _p14._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
 	});
 var _user$project$Main$turtle = _elm_lang$core$Native_List.fromArray(
 	['Forward 10', 'Right 155', 'Forward 11.2', 'Right 115', 'Forward 9.4', 'Right 115', 'Forward 11.2', 'Left 25']);
+var _user$project$Main$ErrorMessage = F2(
+	function (a, b) {
+		return {line: a, error: b};
+	});
+var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
+	var splitMovesFromErrors$ = F3(
+		function (errors, moves, movesAndErrors) {
+			splitMovesFromErrors$:
+			while (true) {
+				var _p15 = movesAndErrors;
+				if (_p15.ctor === '[]') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$List$reverse(errors),
+						_1: _elm_lang$core$List$reverse(moves)
+					};
+				} else {
+					var _p17 = _p15._1;
+					var _p16 = _p15._0;
+					if (_p16._1.ctor === 'Ok') {
+						var _v20 = errors,
+							_v21 = A2(_elm_lang$core$List_ops['::'], _p16._1._0, moves),
+							_v22 = _p17;
+						errors = _v20;
+						moves = _v21;
+						movesAndErrors = _v22;
+						continue splitMovesFromErrors$;
+					} else {
+						var _v23 = A2(
+							_elm_lang$core$List_ops['::'],
+							A2(_user$project$Main$ErrorMessage, _p16._0, _p16._1._0),
+							errors),
+							_v24 = moves,
+							_v25 = _p17;
+						errors = _v23;
+						moves = _v24;
+						movesAndErrors = _v25;
+						continue splitMovesFromErrors$;
+					}
+				}
+			}
+		});
+	return A3(
+		splitMovesFromErrors$,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		movesAndErrors);
+};
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {commands: a, drawTurtle: b, lang: c};
 	});
-var _user$project$Main$init = function (_p14) {
-	var _p15 = _p14;
-	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p15.lang);
+var _user$project$Main$init = function (_p18) {
+	var _p19 = _p18;
+	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p19.lang);
 	var language = function () {
-		var _p16 = langCode;
-		if (_p16 === 'fr') {
+		var _p20 = langCode;
+		if (_p20 === 'fr') {
 			return _user$project$Translation$French;
 		} else {
 			return _user$project$Translation$English;
@@ -11323,27 +11335,27 @@ var _user$project$Main$init = function (_p14) {
 		_user$project$Examples$house(language),
 		true,
 		language);
-	var _p17 = _p15.hash;
-	if (_p17.ctor === 'Nothing') {
+	var _p21 = _p19.hash;
+	if (_p21.ctor === 'Nothing') {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			defaultModel,
 			_elm_lang$core$Native_List.fromArray(
 				[]));
 	} else {
-		var _p18 = _truqu$elm_base64$Base64$decode(_p17._0);
-		if (_p18.ctor === 'Ok') {
+		var _p22 = _truqu$elm_base64$Base64$decode(_p21._0);
+		if (_p22.ctor === 'Ok') {
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
 				A3(
 					_user$project$Main$Model,
-					A2(_elm_lang$core$String$split, '\n', _p18._0),
+					A2(_elm_lang$core$String$split, '\n', _p22._0),
 					true,
 					language),
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		} else {
-			var _p19 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p18._0);
+			var _p23 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p22._0);
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
 				defaultModel,
@@ -11402,12 +11414,8 @@ var _user$project$Main$ParseFloatError = function (a) {
 	return {ctor: 'ParseFloatError', _0: a};
 };
 var _user$project$Main$stringToFloat = function (str) {
-	var errorMessage = function (_p20) {
-		return _user$project$Main$ParseFloatError(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'The string \'',
-				A2(_elm_lang$core$Basics_ops['++'], str, '\' doesn\'t look like a number')));
+	var errorMessage = function (_p24) {
+		return _user$project$Main$ParseFloatError(str);
 	};
 	return A2(
 		_elm_lang$core$Result$formatError,
@@ -11429,51 +11437,51 @@ var _user$project$Main$Forward = function (a) {
 	return {ctor: 'Forward', _0: a};
 };
 var _user$project$Main$parseCommand = function (command) {
-	var _p21 = A2(_elm_lang$core$String$split, ' ', command);
-	_v28_10:
+	var _p25 = A2(_elm_lang$core$String$split, ' ', command);
+	_v30_10:
 	do {
-		if (_p21.ctor === '::') {
-			if (_p21._1.ctor === '::') {
-				if (_p21._1._1.ctor === '[]') {
-					switch (_p21._0) {
+		if (_p25.ctor === '::') {
+			if (_p25._1.ctor === '::') {
+				if (_p25._1._1.ctor === '[]') {
+					switch (_p25._0) {
 						case 'Forward':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Avance':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Left':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Gauche':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Right':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Droite':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_user$project$Main$stringToFloat(_p21._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
 						default:
-							break _v28_10;
+							break _v30_10;
 					}
 				} else {
-					break _v28_10;
+					break _v30_10;
 				}
 			} else {
-				switch (_p21._0) {
+				switch (_p25._0) {
 					case 'PenUp':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'LeveStylo':
@@ -11483,19 +11491,15 @@ var _user$project$Main$parseCommand = function (command) {
 					case 'BaisseStylo':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
 					default:
-						break _v28_10;
+						break _v30_10;
 				}
 			}
 		} else {
-			break _v28_10;
+			break _v30_10;
 		}
 	} while(false);
 	return _elm_lang$core$Result$Err(
-		_user$project$Main$ParseCommandError(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'Could not understand the command \'',
-				A2(_elm_lang$core$Basics_ops['++'], command, '\''))));
+		_user$project$Main$ParseCommandError(command));
 };
 var _user$project$Main$commandsToMoves = function (commands) {
 	return A2(
@@ -11513,9 +11517,9 @@ var _user$project$Main$commandsToMoves = function (commands) {
 var _user$project$Main$view = function (model) {
 	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
 	var parsed = _user$project$Main$commandsToMoves(commands);
-	var _p22 = _user$project$Main$splitMovesFromErrors(parsed);
-	var errors = _p22._0;
-	var moves = _p22._1;
+	var _p26 = _user$project$Main$splitMovesFromErrors(parsed);
+	var errors = _p26._0;
+	var moves = _p26._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -11647,7 +11651,13 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						A2(_elm_lang$core$String$join, '\n', errors))
+						A2(
+							_elm_lang$core$String$join,
+							'\n',
+							A2(
+								_elm_lang$core$List$map,
+								_user$project$Main$translateError(model.lang),
+								errors)))
 					]))
 			]));
 };

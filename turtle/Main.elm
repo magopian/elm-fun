@@ -30,6 +30,12 @@ type Error
     | ParseFloatError String
 
 
+type alias ErrorMessage =
+    { line : Int
+    , error : Error
+    }
+
+
 type alias Model =
     { commands : List String
     , drawTurtle : Bool
@@ -180,7 +186,12 @@ view model =
                     ]
                     [ Html.text <| T.translate model.lang T.ShareUrl ]
                 ]
-            , Html.pre [] [ Html.text <| String.join "\n" errors ]
+            , Html.pre []
+                [ errors
+                    |> List.map (translateError model.lang)
+                    |> String.join "\n"
+                    |> Html.text
+                ]
             ]
 
 
@@ -203,6 +214,16 @@ languageSwitcher lang =
             [ button' T.English "English"
             , button' T.French "Français"
             ]
+
+
+translateError : T.Language -> ErrorMessage -> String
+translateError lang { line, error } =
+    case error of
+        ParseCommandError str ->
+            T.translate lang (T.ParseCommandError line str)
+
+        ParseFloatError str ->
+            T.translate lang (T.ParseFloatError line str)
 
 
 
@@ -254,14 +275,12 @@ drawPath path =
 
 stringToFloat : String -> Result Error Float
 stringToFloat str =
-    -- This function is needed to "map" the error to our own type, with our own
-    -- message.
+    -- This function is needed to "map" the error to our own type, that we'll
+    -- use with i18n. We also want to keep the faulty string for our final
+    -- translated message.
     let
         errorMessage _ =
-            "The string '"
-                ++ str
-                ++ "' doesn't look like a number"
-                |> ParseFloatError
+            ParseFloatError str
     in
         String.toFloat str
             |> Result.formatError errorMessage
@@ -301,11 +320,7 @@ parseCommand command =
             Ok PenDown
 
         _ ->
-            "Could not understand the command '"
-                ++ command
-                ++ "'"
-                |> ParseCommandError
-                |> Err
+            Err <| ParseCommandError command
 
 
 commandsToMoves : List String -> List ( Int, Result Error Step )
@@ -319,14 +334,14 @@ commandsToMoves commands =
 
 splitMovesFromErrors :
     List ( Int, Result Error Step )
-    -> ( List String, List Step )
+    -> ( List ErrorMessage, List Step )
 splitMovesFromErrors movesAndErrors =
     let
         splitMovesFromErrors' :
-            List String
+            List ErrorMessage
             -> List Step
             -> List ( Int, Result Error Step )
-            -> ( List String, List Step )
+            -> ( List ErrorMessage, List Step )
         splitMovesFromErrors' errors moves movesAndErrors =
             case movesAndErrors of
                 [] ->
@@ -340,11 +355,9 @@ splitMovesFromErrors movesAndErrors =
                                 (move :: moves)
                                 tail
 
-                        ( i, Err msg ) ->
+                        ( i, Err error ) ->
                             splitMovesFromErrors'
-                                (("Line " ++ (toString i) ++ ": " ++ (toString msg))
-                                    :: errors
-                                )
+                                ((ErrorMessage i error) :: errors)
                                 moves
                                 tail
     in
