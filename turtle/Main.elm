@@ -339,16 +339,31 @@ parseCommand command =
         [ "Forward", distance ] ->
             Result.map Forward (String.toFloat distance)
 
+        [ "Avance", distance ] ->
+            Result.map Forward (String.toFloat distance)
+
         [ "Left", angle ] ->
+            Result.map Left (String.toFloat angle)
+
+        [ "Gauche", angle ] ->
             Result.map Left (String.toFloat angle)
 
         [ "Right", angle ] ->
             Result.map Right (String.toFloat angle)
 
+        [ "Droite", angle ] ->
+            Result.map Right (String.toFloat angle)
+
         [ "PenUp" ] ->
             Ok PenUp
 
+        [ "LeveStylo" ] ->
+            Ok PenUp
+
         [ "PenDown" ] ->
+            Ok PenDown
+
+        [ "BaisseStylo" ] ->
             Ok PenDown
 
         _ ->

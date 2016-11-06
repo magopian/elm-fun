@@ -11168,7 +11168,7 @@ var _user$project$Main$Forward = function (a) {
 };
 var _user$project$Main$parseCommand = function (command) {
 	var _p20 = A2(_elm_lang$core$String$split, ' ', command);
-	_v28_5:
+	_v28_10:
 	do {
 		if (_p20.ctor === '::') {
 			if (_p20._1.ctor === '::') {
@@ -11179,7 +11179,17 @@ var _user$project$Main$parseCommand = function (command) {
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
 								_elm_lang$core$String$toFloat(_p20._1._0));
+						case 'Avance':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Forward,
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Left':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Left,
+								_elm_lang$core$String$toFloat(_p20._1._0));
+						case 'Gauche':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
@@ -11189,24 +11199,33 @@ var _user$project$Main$parseCommand = function (command) {
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
 								_elm_lang$core$String$toFloat(_p20._1._0));
+						case 'Droite':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Right,
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						default:
-							break _v28_5;
+							break _v28_10;
 					}
 				} else {
-					break _v28_5;
+					break _v28_10;
 				}
 			} else {
 				switch (_p20._0) {
 					case 'PenUp':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
+					case 'LeveStylo':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'PenDown':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
+					case 'BaisseStylo':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
 					default:
-						break _v28_5;
+						break _v28_10;
 				}
 			}
 		} else {
-			break _v28_5;
+			break _v28_10;
 		}
 	} while(false);
 	return _elm_lang$core$Result$Err('Could not parse the command');
