@@ -10851,12 +10851,52 @@ var _user$project$Translation$translate = F2(
 					return A2(_user$project$Translation$TranslationSet, 'House', 'Maison');
 				case 'Star':
 					return A2(_user$project$Translation$TranslationSet, 'Star', 'Étoile');
-				default:
+				case 'Elm':
 					return A2(_user$project$Translation$TranslationSet, 'Elm', 'Elm');
+				case 'Forward':
+					var _p1 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Forward ',
+							_elm_lang$core$Basics$toString(_p1)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Avance ',
+							_elm_lang$core$Basics$toString(_p1)));
+				case 'Left':
+					var _p2 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Left ',
+							_elm_lang$core$Basics$toString(_p2)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Gauche ',
+							_elm_lang$core$Basics$toString(_p2)));
+				case 'Right':
+					var _p3 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Right ',
+							_elm_lang$core$Basics$toString(_p3)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Droite ',
+							_elm_lang$core$Basics$toString(_p3)));
+				case 'PenUp':
+					return A2(_user$project$Translation$TranslationSet, 'PenUp', 'LeveStylo');
+				default:
+					return A2(_user$project$Translation$TranslationSet, 'PenDown', 'BaisseStylo');
 			}
 		}();
-		var _p1 = lang;
-		if (_p1.ctor === 'English') {
+		var _p4 = lang;
+		if (_p4.ctor === 'English') {
 			return translationSet.english;
 		} else {
 			return translationSet.french;
@@ -10864,12 +10904,113 @@ var _user$project$Translation$translate = F2(
 	});
 var _user$project$Translation$French = {ctor: 'French'};
 var _user$project$Translation$English = {ctor: 'English'};
+var _user$project$Translation$PenDown = {ctor: 'PenDown'};
+var _user$project$Translation$PenUp = {ctor: 'PenUp'};
+var _user$project$Translation$Right = function (a) {
+	return {ctor: 'Right', _0: a};
+};
+var _user$project$Translation$Left = function (a) {
+	return {ctor: 'Left', _0: a};
+};
+var _user$project$Translation$Forward = function (a) {
+	return {ctor: 'Forward', _0: a};
+};
 var _user$project$Translation$Elm = {ctor: 'Elm'};
 var _user$project$Translation$Star = {ctor: 'Star'};
 var _user$project$Translation$House = {ctor: 'House'};
 var _user$project$Translation$ShareUrl = {ctor: 'ShareUrl'};
 var _user$project$Translation$DisplayTurtle = {ctor: 'DisplayTurtle'};
 var _user$project$Translation$TurtleCommands = {ctor: 'TurtleCommands'};
+
+var _user$project$Examples$elm = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Left(90),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(40),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(40),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(140),
+				_user$project$Translation$Forward(60),
+				_user$project$Translation$Left(100),
+				_user$project$Translation$Forward(60),
+				_user$project$Translation$Right(140),
+				_user$project$Translation$Forward(100)
+			]));
+};
+var _user$project$Examples$star = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100)
+			]));
+};
+var _user$project$Examples$house = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(135),
+				_user$project$Translation$Forward(141.42),
+				_user$project$Translation$Left(135),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(135),
+				_user$project$Translation$Forward(70.71),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(70.71),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(141.42),
+				_user$project$Translation$Left(135),
+				_user$project$Translation$Forward(100)
+			]));
+};
 
 var _user$project$Main$urlFromCommands = F2(
 	function (commands, lang) {
@@ -11037,12 +11178,6 @@ var _user$project$Main$drawPath = function (path) {
 var _user$project$Main$drawShape = function (shape) {
 	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
 };
-var _user$project$Main$elm = _elm_lang$core$Native_List.fromArray(
-	['Left 90', 'PenUp', 'Forward 100', 'PenDown', 'Forward 50', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
-var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
-	['Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100']);
-var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
-	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p13 = msg;
@@ -11062,7 +11197,9 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{commands: _user$project$Main$house}),
+						{
+							commands: _user$project$Examples$house(model.lang)
+						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'LoadStar':
@@ -11070,7 +11207,9 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{commands: _user$project$Main$star}),
+						{
+							commands: _user$project$Examples$star(model.lang)
+						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'LoadElm':
@@ -11078,7 +11217,9 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{commands: _user$project$Main$elm}),
+						{
+							commands: _user$project$Examples$elm(model.lang)
+						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'DrawTurtle':
@@ -11116,7 +11257,11 @@ var _user$project$Main$init = function (_p14) {
 			return _user$project$Translation$English;
 		}
 	}();
-	var defaultModel = A3(_user$project$Main$Model, _user$project$Main$house, true, language);
+	var defaultModel = A3(
+		_user$project$Main$Model,
+		_user$project$Examples$house(language),
+		true,
+		language);
 	var _p17 = _p15.hash;
 	if (_p17.ctor === 'Nothing') {
 		return A2(

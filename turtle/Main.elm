@@ -3,6 +3,7 @@ module Main exposing (..)
 import Base64
 import Collage
 import Element
+import Examples exposing (house, star, elm)
 import Html exposing (Html)
 import Html.App
 import Html.Attributes
@@ -43,83 +44,6 @@ turtle =
     ]
 
 
-house =
-    [ "Forward 100"
-    , "Right 135"
-    , "Forward 141.42"
-    , "Left 135"
-    , "Forward 100"
-    , "Left 90"
-    , "Forward 100"
-    , "Right 135"
-    , "Forward 70.71"
-    , "Right 90"
-    , "Forward 70.71"
-    , "Right 90"
-    , "Forward 141.42"
-    , "Left 135"
-    , "Forward 100"
-    ]
-
-
-star =
-    [ "Forward 100"
-    , "Right 144"
-    , "Forward 100"
-    , "Right 144"
-    , "Forward 100"
-    , "Right 144"
-    , "Forward 100"
-    , "Right 144"
-    , "Forward 100"
-    ]
-
-
-elm =
-    [ "Left 90"
-    , "PenUp"
-    , "Forward 100"
-    , "PenDown"
-    , "Forward 50"
-    , "Right 90"
-    , "Forward 100"
-    , "Right 90"
-    , "Forward 50"
-    , "Left 180"
-    , "Forward 50"
-    , "Left 90"
-    , "Forward 50"
-    , "Left 90"
-    , "Forward 40"
-    , "Left 180"
-    , "Forward 40"
-    , "Left 90"
-    , "Forward 50"
-    , "Left 90"
-    , "Forward 50"
-    , "PenUp"
-    , "Forward 50"
-    , "PenDown"
-    , "Left 90"
-    , "Forward 100"
-    , "Left 180"
-    , "Forward 100"
-    , "Left 90"
-    , "Forward 50"
-    , "PenUp"
-    , "Forward 50"
-    , "PenDown"
-    , "Left 90"
-    , "Forward 100"
-    , "Right 140"
-    , "Forward 60"
-    , "Left 100"
-    , "Forward 60"
-    , "Right 140"
-    , "Forward 100"
-    ]
-
-
 type alias Flags =
     { lang : Maybe String
     , hash : Maybe String
@@ -141,7 +65,7 @@ init { lang, hash } =
                     T.English
 
         defaultModel =
-            Model house True language
+            Model (house language) True language
     in
         case hash of
             Nothing ->
@@ -167,13 +91,13 @@ update msg model =
             { model | commands = String.split "\n" commands } ! []
 
         LoadHouse ->
-            { model | commands = house } ! []
+            { model | commands = (house model.lang) } ! []
 
         LoadStar ->
-            { model | commands = star } ! []
+            { model | commands = (star model.lang) } ! []
 
         LoadElm ->
-            { model | commands = elm } ! []
+            { model | commands = (elm model.lang) } ! []
 
         DrawTurtle bool ->
             { model | drawTurtle = bool } ! []

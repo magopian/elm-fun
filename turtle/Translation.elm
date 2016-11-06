@@ -19,6 +19,11 @@ type TranslationId
     | House
     | Star
     | Elm
+    | Forward Float
+    | Left Float
+    | Right Float
+    | PenUp
+    | PenDown
 
 
 translate : Language -> TranslationId -> String
@@ -59,6 +64,27 @@ translate lang trans =
 
                 Elm ->
                     TranslationSet "Elm" "Elm"
+
+                Forward distance ->
+                    TranslationSet
+                        ("Forward " ++ toString distance)
+                        ("Avance " ++ toString distance)
+
+                Left angle ->
+                    TranslationSet
+                        ("Left " ++ toString angle)
+                        ("Gauche " ++ toString angle)
+
+                Right angle ->
+                    TranslationSet
+                        ("Right " ++ toString angle)
+                        ("Droite " ++ toString angle)
+
+                PenUp ->
+                    TranslationSet "PenUp" "LeveStylo"
+
+                PenDown ->
+                    TranslationSet "PenDown" "BaisseStylo"
     in
         case lang of
             English ->
