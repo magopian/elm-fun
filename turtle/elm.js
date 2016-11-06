@@ -10832,30 +10832,280 @@ var _truqu$elm_base64$Base64$encode = function (s) {
 					_truqu$elm_base64$Base64$toCodeList(s)))));
 };
 
-var _user$project$Main$urlFromCommands = function (commands) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'#',
-		A2(
-			_elm_lang$core$Result$withDefault,
-			'',
-			_truqu$elm_base64$Base64$encode(
-				A2(_elm_lang$core$String$join, '\n', commands))));
+var _user$project$Translation$TranslationSet = F2(
+	function (a, b) {
+		return {english: a, french: b};
+	});
+var _user$project$Translation$translate = F2(
+	function (lang, trans) {
+		var translationSet = function () {
+			var _p0 = trans;
+			switch (_p0.ctor) {
+				case 'TurtleCommands':
+					return A2(_user$project$Translation$TranslationSet, 'Turtle commands:\n                        Forward <distance>,\n                        Left <angle>,\n                        Right <angle>,\n                        PenUp,\n                        PenDown\n                        ', 'Commandes de la tortue :\n                        Avance <distance>,\n                        Gauche <angle>,\n                        Droite <angle>,\n                        LeveStylo,\n                        BaisseStylo\n                        ');
+				case 'DisplayTurtle':
+					return A2(_user$project$Translation$TranslationSet, 'Display the \'turtle\'?', 'Afficher la \'tortue\' ?');
+				case 'ShareUrl':
+					return A2(_user$project$Translation$TranslationSet, 'Share url', 'Lien de partage');
+				case 'House':
+					return A2(_user$project$Translation$TranslationSet, 'House', 'Maison');
+				case 'Star':
+					return A2(_user$project$Translation$TranslationSet, 'Star', 'Étoile');
+				case 'Elm':
+					return A2(_user$project$Translation$TranslationSet, 'Elm', 'Elm');
+				case 'Forward':
+					var _p1 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Forward ',
+							_elm_lang$core$Basics$toString(_p1)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Avance ',
+							_elm_lang$core$Basics$toString(_p1)));
+				case 'Left':
+					var _p2 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Left ',
+							_elm_lang$core$Basics$toString(_p2)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Gauche ',
+							_elm_lang$core$Basics$toString(_p2)));
+				case 'Right':
+					var _p3 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Right ',
+							_elm_lang$core$Basics$toString(_p3)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Droite ',
+							_elm_lang$core$Basics$toString(_p3)));
+				case 'PenUp':
+					return A2(_user$project$Translation$TranslationSet, 'PenUp', 'LeveStylo');
+				case 'PenDown':
+					return A2(_user$project$Translation$TranslationSet, 'PenDown', 'BaisseStylo');
+				case 'ParseFloatError':
+					var _p5 = _p0._1;
+					var _p4 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Line ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p4),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									': the string \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p5, '\' doesn\'t look like a valid number')))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Ligne ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p4),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' : la chaîne \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p5, '\' n\'a pas l\'air d\'un nombre')))));
+				default:
+					var _p7 = _p0._1;
+					var _p6 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Line ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p6),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									': could not understand the command \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p7, '\'')))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Ligne ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p6),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' : impossible de comprendre la commande \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p7, '\'')))));
+			}
+		}();
+		var _p8 = lang;
+		if (_p8.ctor === 'English') {
+			return translationSet.english;
+		} else {
+			return translationSet.french;
+		}
+	});
+var _user$project$Translation$French = {ctor: 'French'};
+var _user$project$Translation$English = {ctor: 'English'};
+var _user$project$Translation$ParseFloatError = F2(
+	function (a, b) {
+		return {ctor: 'ParseFloatError', _0: a, _1: b};
+	});
+var _user$project$Translation$ParseCommandError = F2(
+	function (a, b) {
+		return {ctor: 'ParseCommandError', _0: a, _1: b};
+	});
+var _user$project$Translation$PenDown = {ctor: 'PenDown'};
+var _user$project$Translation$PenUp = {ctor: 'PenUp'};
+var _user$project$Translation$Right = function (a) {
+	return {ctor: 'Right', _0: a};
 };
+var _user$project$Translation$Left = function (a) {
+	return {ctor: 'Left', _0: a};
+};
+var _user$project$Translation$Forward = function (a) {
+	return {ctor: 'Forward', _0: a};
+};
+var _user$project$Translation$Elm = {ctor: 'Elm'};
+var _user$project$Translation$Star = {ctor: 'Star'};
+var _user$project$Translation$House = {ctor: 'House'};
+var _user$project$Translation$ShareUrl = {ctor: 'ShareUrl'};
+var _user$project$Translation$DisplayTurtle = {ctor: 'DisplayTurtle'};
+var _user$project$Translation$TurtleCommands = {ctor: 'TurtleCommands'};
+
+var _user$project$Examples$elm = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Left(90),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(40),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(40),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(180),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenUp,
+				_user$project$Translation$Forward(50),
+				_user$project$Translation$PenDown,
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(140),
+				_user$project$Translation$Forward(60),
+				_user$project$Translation$Left(100),
+				_user$project$Translation$Forward(60),
+				_user$project$Translation$Right(140),
+				_user$project$Translation$Forward(100)
+			]));
+};
+var _user$project$Examples$star = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(144),
+				_user$project$Translation$Forward(100)
+			]));
+};
+var _user$project$Examples$house = function (lang) {
+	return A2(
+		_elm_lang$core$List$map,
+		_user$project$Translation$translate(lang),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(135),
+				_user$project$Translation$Forward(141.42),
+				_user$project$Translation$Left(135),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Left(90),
+				_user$project$Translation$Forward(100),
+				_user$project$Translation$Right(135),
+				_user$project$Translation$Forward(70.71),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(70.71),
+				_user$project$Translation$Right(90),
+				_user$project$Translation$Forward(141.42),
+				_user$project$Translation$Left(135),
+				_user$project$Translation$Forward(100)
+			]));
+};
+
+var _user$project$Main$urlFromCommands = F2(
+	function (commands, lang) {
+		var langStr = function () {
+			var _p0 = lang;
+			if (_p0.ctor === 'English') {
+				return 'en';
+			} else {
+				return 'fr';
+			}
+		}();
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'?hash=',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_elm_lang$core$Result$withDefault,
+					'',
+					_truqu$elm_base64$Base64$encode(
+						A2(_elm_lang$core$String$join, '\n', commands))),
+				A2(_elm_lang$core$Basics_ops['++'], '&lang=', langStr)));
+	});
 var _user$project$Main$toPath = F4(
-	function (_p0, currentAngle, draw, step) {
-		var _p1 = _p0;
-		var _p4 = _p1;
-		var _p2 = step;
-		switch (_p2.ctor) {
+	function (_p1, currentAngle, draw, step) {
+		var _p2 = _p1;
+		var _p5 = _p2;
+		var _p3 = step;
+		switch (_p3.ctor) {
 			case 'Forward':
-				var _p3 = _p2._0;
+				var _p4 = _p3._0;
 				var newPoint = {
 					ctor: '_Tuple2',
-					_0: _p1._0 + (_elm_lang$core$Basics$cos(
-						_elm_lang$core$Basics$degrees(currentAngle)) * _p3),
-					_1: _p1._1 + (_elm_lang$core$Basics$sin(
-						_elm_lang$core$Basics$degrees(currentAngle)) * _p3)
+					_0: _p2._0 + (_elm_lang$core$Basics$cos(
+						_elm_lang$core$Basics$degrees(currentAngle)) * _p4),
+					_1: _p2._1 + (_elm_lang$core$Basics$sin(
+						_elm_lang$core$Basics$degrees(currentAngle)) * _p4)
 				};
 				return {
 					ctor: '_Tuple4',
@@ -10863,16 +11113,16 @@ var _user$project$Main$toPath = F4(
 					_1: currentAngle,
 					_2: draw,
 					_3: _elm_lang$core$Maybe$Just(
-						A2(_evancz$elm_graphics$Collage$segment, _p4, newPoint))
+						A2(_evancz$elm_graphics$Collage$segment, _p5, newPoint))
 				};
 			case 'Left':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle + _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle + _p3._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
 			case 'Right':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle - _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle - _p3._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
 			case 'PenUp':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: false, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle, _2: false, _3: _elm_lang$core$Maybe$Nothing};
 			default:
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: true, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle, _2: true, _3: _elm_lang$core$Maybe$Nothing};
 		}
 	});
 var _user$project$Main$movesToPaths = function (moves) {
@@ -10880,38 +11130,38 @@ var _user$project$Main$movesToPaths = function (moves) {
 		function (point, angle, draw, paths, moves) {
 			movesToPaths$:
 			while (true) {
-				var _p5 = moves;
-				if (_p5.ctor === '::') {
-					var _p8 = _p5._1;
-					var _p6 = A4(_user$project$Main$toPath, point, angle, draw, _p5._0);
-					var newPoint = _p6._0;
-					var newAngle = _p6._1;
-					var newDraw = _p6._2;
-					var path = _p6._3;
-					var _p7 = path;
-					if (_p7.ctor === 'Nothing') {
-						var _v4 = newPoint,
-							_v5 = newAngle,
-							_v6 = newDraw,
-							_v7 = paths,
-							_v8 = _p8;
-						point = _v4;
-						angle = _v5;
-						draw = _v6;
-						paths = _v7;
-						moves = _v8;
+				var _p6 = moves;
+				if (_p6.ctor === '::') {
+					var _p9 = _p6._1;
+					var _p7 = A4(_user$project$Main$toPath, point, angle, draw, _p6._0);
+					var newPoint = _p7._0;
+					var newAngle = _p7._1;
+					var newDraw = _p7._2;
+					var path = _p7._3;
+					var _p8 = path;
+					if (_p8.ctor === 'Nothing') {
+						var _v5 = newPoint,
+							_v6 = newAngle,
+							_v7 = newDraw,
+							_v8 = paths,
+							_v9 = _p9;
+						point = _v5;
+						angle = _v6;
+						draw = _v7;
+						paths = _v8;
+						moves = _v9;
 						continue movesToPaths$;
 					} else {
-						var _v9 = newPoint,
-							_v10 = newAngle,
-							_v11 = newDraw,
-							_v12 = newDraw ? A2(_elm_lang$core$List_ops['::'], _p7._0, paths) : paths,
-							_v13 = _p8;
-						point = _v9;
-						angle = _v10;
-						draw = _v11;
-						paths = _v12;
-						moves = _v13;
+						var _v10 = newPoint,
+							_v11 = newAngle,
+							_v12 = newDraw,
+							_v13 = newDraw ? A2(_elm_lang$core$List_ops['::'], _p8._0, paths) : paths,
+							_v14 = _p9;
+						point = _v10;
+						angle = _v11;
+						draw = _v12;
+						paths = _v13;
+						moves = _v14;
 						continue movesToPaths$;
 					}
 				} else {
@@ -10928,45 +11178,130 @@ var _user$project$Main$movesToPaths = function (moves) {
 			[]),
 		moves);
 };
+var _user$project$Main$drawPath = function (path) {
+	return A2(_evancz$elm_graphics$Collage$traced, _evancz$elm_graphics$Collage$defaultLine, path);
+};
+var _user$project$Main$drawShape = function (shape) {
+	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
+};
+var _user$project$Main$translateError = F2(
+	function (lang, _p10) {
+		var _p11 = _p10;
+		var _p13 = _p11.line;
+		var _p12 = _p11.error;
+		if (_p12.ctor === 'ParseCommandError') {
+			return A2(
+				_user$project$Translation$translate,
+				lang,
+				A2(_user$project$Translation$ParseCommandError, _p13, _p12._0));
+		} else {
+			return A2(
+				_user$project$Translation$translate,
+				lang,
+				A2(_user$project$Translation$ParseFloatError, _p13, _p12._0));
+		}
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p14 = msg;
+		switch (_p14.ctor) {
+			case 'CommandsChange':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							commands: A2(_elm_lang$core$String$split, '\n', _p14._0)
+						}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'LoadHouse':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							commands: _user$project$Examples$house(model.lang)
+						}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'LoadStar':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							commands: _user$project$Examples$star(model.lang)
+						}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'LoadElm':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							commands: _user$project$Examples$elm(model.lang)
+						}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			case 'DrawTurtle':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{drawTurtle: _p14._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{lang: _p14._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+		}
+	});
+var _user$project$Main$turtle = _elm_lang$core$Native_List.fromArray(
+	['Forward 10', 'Right 155', 'Forward 11.2', 'Right 115', 'Forward 9.4', 'Right 115', 'Forward 11.2', 'Left 25']);
+var _user$project$Main$ErrorMessage = F2(
+	function (a, b) {
+		return {line: a, error: b};
+	});
 var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 	var splitMovesFromErrors$ = F3(
 		function (errors, moves, movesAndErrors) {
 			splitMovesFromErrors$:
 			while (true) {
-				var _p9 = movesAndErrors;
-				if (_p9.ctor === '[]') {
+				var _p15 = movesAndErrors;
+				if (_p15.ctor === '[]') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$List$reverse(errors),
 						_1: _elm_lang$core$List$reverse(moves)
 					};
 				} else {
-					var _p11 = _p9._1;
-					var _p10 = _p9._0;
-					if (_p10._1.ctor === 'Ok') {
-						var _v16 = errors,
-							_v17 = A2(_elm_lang$core$List_ops['::'], _p10._1._0, moves),
-							_v18 = _p11;
-						errors = _v16;
-						moves = _v17;
-						movesAndErrors = _v18;
+					var _p17 = _p15._1;
+					var _p16 = _p15._0;
+					if (_p16._1.ctor === 'Ok') {
+						var _v20 = errors,
+							_v21 = A2(_elm_lang$core$List_ops['::'], _p16._1._0, moves),
+							_v22 = _p17;
+						errors = _v20;
+						moves = _v21;
+						movesAndErrors = _v22;
 						continue splitMovesFromErrors$;
 					} else {
-						var _v19 = A2(
+						var _v23 = A2(
 							_elm_lang$core$List_ops['::'],
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Line ',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p10._0),
-									A2(_elm_lang$core$Basics_ops['++'], ': ', _p10._1._0))),
+							A2(_user$project$Main$ErrorMessage, _p16._0 + 1, _p16._1._0),
 							errors),
-							_v20 = moves,
-							_v21 = _p11;
-						errors = _v19;
-						moves = _v20;
-						movesAndErrors = _v21;
+							_v24 = moves,
+							_v25 = _p17;
+						errors = _v23;
+						moves = _v24;
+						movesAndErrors = _v25;
 						continue splitMovesFromErrors$;
 					}
 				}
@@ -10980,104 +11315,91 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 			[]),
 		movesAndErrors);
 };
-var _user$project$Main$drawPath = function (path) {
-	return A2(_evancz$elm_graphics$Collage$traced, _evancz$elm_graphics$Collage$defaultLine, path);
-};
-var _user$project$Main$drawShape = function (shape) {
-	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
-};
-var _user$project$Main$elm = _elm_lang$core$Native_List.fromArray(
-	['Left 90', 'PenUp', 'Forward 100', 'PenDown', 'Forward 50', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
-var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
-	['Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100', 'Right 144', 'Forward 100']);
-var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
-	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p12 = msg;
-		switch (_p12.ctor) {
-			case 'CommandsChange':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							commands: A2(_elm_lang$core$String$split, '\n', _p12._0)
-						}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'LoadHouse':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{commands: _user$project$Main$house}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'LoadStar':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{commands: _user$project$Main$star}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'LoadElm':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{commands: _user$project$Main$elm}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{drawTurtle: _p12._0}),
-					_elm_lang$core$Native_List.fromArray(
-						[]));
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {commands: a, drawTurtle: b, lang: c};
+	});
+var _user$project$Main$init = function (_p18) {
+	var _p19 = _p18;
+	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p19.lang);
+	var language = function () {
+		var _p20 = langCode;
+		if (_p20 === 'fr') {
+			return _user$project$Translation$French;
+		} else {
+			return _user$project$Translation$English;
 		}
-	});
-var _user$project$Main$turtle = _elm_lang$core$Native_List.fromArray(
-	['Forward 10', 'Right 155', 'Forward 11.2', 'Right 115', 'Forward 9.4', 'Right 115', 'Forward 11.2', 'Left 25']);
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {commands: a, drawTurtle: b};
-	});
-var _user$project$Main$init = function (_p13) {
-	var _p14 = _p13;
-	var _p15 = _p14.hash;
-	if (_p15 === '') {
+	}();
+	var defaultModel = A3(
+		_user$project$Main$Model,
+		_user$project$Examples$house(language),
+		true,
+		language);
+	var _p21 = _p19.hash;
+	if (_p21.ctor === 'Nothing') {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
-			A2(_user$project$Main$Model, _user$project$Main$house, true),
+			defaultModel,
 			_elm_lang$core$Native_List.fromArray(
 				[]));
 	} else {
-		var _p16 = _truqu$elm_base64$Base64$decode(_p15);
-		if (_p16.ctor === 'Ok') {
+		var _p22 = _truqu$elm_base64$Base64$decode(_p21._0);
+		if (_p22.ctor === 'Ok') {
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
-				A2(
+				A3(
 					_user$project$Main$Model,
-					A2(_elm_lang$core$String$split, '\n', _p16._0),
-					true),
+					A2(_elm_lang$core$String$split, '\n', _p22._0),
+					true,
+					language),
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		} else {
-			var _p17 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p16._0);
+			var _p23 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p22._0);
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
-				A2(_user$project$Main$Model, _user$project$Main$house, true),
+				defaultModel,
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		}
 	}
 };
-var _user$project$Main$Flags = function (a) {
-	return {hash: a};
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {lang: a, hash: b};
+	});
+var _user$project$Main$SetLanguage = function (a) {
+	return {ctor: 'SetLanguage', _0: a};
+};
+var _user$project$Main$languageSwitcher = function (lang) {
+	var isCurrent = function (lang$) {
+		return _elm_lang$core$Native_Utils.eq(lang, lang$);
+	};
+	var button$ = F2(
+		function (lang$, name) {
+			return A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$disabled(
+						isCurrent(lang$)),
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$Main$SetLanguage(lang$))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(name)
+					]));
+		});
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(button$, _user$project$Translation$English, 'English'),
+				A2(button$, _user$project$Translation$French, 'Français')
+			]));
 };
 var _user$project$Main$DrawTurtle = function (a) {
 	return {ctor: 'DrawTurtle', _0: a};
@@ -11087,6 +11409,21 @@ var _user$project$Main$LoadStar = {ctor: 'LoadStar'};
 var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
+};
+var _user$project$Main$ParseFloatError = function (a) {
+	return {ctor: 'ParseFloatError', _0: a};
+};
+var _user$project$Main$stringToFloat = function (str) {
+	var errorMessage = function (_p24) {
+		return _user$project$Main$ParseFloatError(str);
+	};
+	return A2(
+		_elm_lang$core$Result$formatError,
+		errorMessage,
+		_elm_lang$core$String$toFloat(str));
+};
+var _user$project$Main$ParseCommandError = function (a) {
+	return {ctor: 'ParseCommandError', _0: a};
 };
 var _user$project$Main$PenDown = {ctor: 'PenDown'};
 var _user$project$Main$PenUp = {ctor: 'PenUp'};
@@ -11100,49 +11437,69 @@ var _user$project$Main$Forward = function (a) {
 	return {ctor: 'Forward', _0: a};
 };
 var _user$project$Main$parseCommand = function (command) {
-	var _p18 = A2(_elm_lang$core$String$split, ' ', command);
-	_v26_5:
+	var _p25 = A2(_elm_lang$core$String$split, ' ', command);
+	_v30_10:
 	do {
-		if (_p18.ctor === '::') {
-			if (_p18._1.ctor === '::') {
-				if (_p18._1._1.ctor === '[]') {
-					switch (_p18._0) {
+		if (_p25.ctor === '::') {
+			if (_p25._1.ctor === '::') {
+				if (_p25._1._1.ctor === '[]') {
+					switch (_p25._0) {
 						case 'Forward':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
+						case 'Avance':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Forward,
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Left':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
+						case 'Gauche':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Left,
+								_user$project$Main$stringToFloat(_p25._1._0));
 						case 'Right':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_user$project$Main$stringToFloat(_p25._1._0));
+						case 'Droite':
+							return A2(
+								_elm_lang$core$Result$map,
+								_user$project$Main$Right,
+								_user$project$Main$stringToFloat(_p25._1._0));
 						default:
-							break _v26_5;
+							break _v30_10;
 					}
 				} else {
-					break _v26_5;
+					break _v30_10;
 				}
 			} else {
-				switch (_p18._0) {
+				switch (_p25._0) {
 					case 'PenUp':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
+					case 'LeveStylo':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'PenDown':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
+					case 'BaisseStylo':
+						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
 					default:
-						break _v26_5;
+						break _v30_10;
 				}
 			}
 		} else {
-			break _v26_5;
+			break _v30_10;
 		}
 	} while(false);
-	return _elm_lang$core$Result$Err('Could not parse the command');
+	return _elm_lang$core$Result$Err(
+		_user$project$Main$ParseCommandError(command));
 };
 var _user$project$Main$commandsToMoves = function (commands) {
 	return A2(
@@ -11160,22 +11517,24 @@ var _user$project$Main$commandsToMoves = function (commands) {
 var _user$project$Main$view = function (model) {
 	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
 	var parsed = _user$project$Main$commandsToMoves(commands);
-	var _p19 = _user$project$Main$splitMovesFromErrors(parsed);
-	var errors = _p19._0;
-	var moves = _p19._1;
+	var _p26 = _user$project$Main$splitMovesFromErrors(parsed);
+	var errors = _p26._0;
+	var moves = _p26._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				_user$project$Main$languageSwitcher(model.lang),
 				A2(
 				_elm_lang$html$Html$p,
 				_elm_lang$core$Native_List.fromArray(
 					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Turtle commands:\n                    Forward <distance>,\n                    Left <angle>,\n                    Right <angle>,\n                    PenUp,\n                    PenDown\n                    ')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$TurtleCommands))
 					])),
 				A2(
 				_elm_lang$html$Html$p,
@@ -11199,7 +11558,8 @@ var _user$project$Main$view = function (model) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[])),
-								_elm_lang$html$Html$text('Display the \'turtle\'?')
+								_elm_lang$html$Html$text(
+								A2(_user$project$Translation$translate, model.lang, _user$project$Translation$DisplayTurtle))
 							]))
 					])),
 				A2(
@@ -11240,7 +11600,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('house')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$House))
 					])),
 				A2(
 				_elm_lang$html$Html$button,
@@ -11250,7 +11611,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('star')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$Star))
 					])),
 				A2(
 				_elm_lang$html$Html$button,
@@ -11260,7 +11622,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Elm')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$Elm))
 					])),
 				A2(
 				_elm_lang$html$Html$p,
@@ -11273,11 +11636,12 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html_Attributes$href(
-								_user$project$Main$urlFromCommands(model.commands))
+								A2(_user$project$Main$urlFromCommands, model.commands, model.lang))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text('Share url')
+								_elm_lang$html$Html$text(
+								A2(_user$project$Translation$translate, model.lang, _user$project$Translation$ShareUrl))
 							]))
 					])),
 				A2(
@@ -11287,7 +11651,13 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						A2(_elm_lang$core$String$join, '\n', errors))
+						A2(
+							_elm_lang$core$String$join,
+							'\n',
+							A2(
+								_elm_lang$core$List$map,
+								_user$project$Main$translateError(model.lang),
+								errors)))
 					]))
 			]));
 };
@@ -11301,10 +11671,31 @@ var _user$project$Main$main = {
 		}),
 	flags: A2(
 		_elm_lang$core$Json_Decode$andThen,
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'hash', _elm_lang$core$Json_Decode$string),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'hash',
+			_elm_lang$core$Json_Decode$oneOf(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string)
+					]))),
 		function (hash) {
-			return _elm_lang$core$Json_Decode$succeed(
-				{hash: hash});
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'lang',
+					_elm_lang$core$Json_Decode$oneOf(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+								A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string)
+							]))),
+				function (lang) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{hash: hash, lang: lang});
+				});
 		})
 };
 
