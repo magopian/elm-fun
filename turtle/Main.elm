@@ -209,13 +209,7 @@ view model =
             [ languageSwitcher model.lang
             , Html.p
                 []
-                [ Html.text """Turtle commands:
-                    Forward <distance>,
-                    Left <angle>,
-                    Right <angle>,
-                    PenUp,
-                    PenDown
-                    """ ]
+                [ Html.text <| helpText model.lang ]
             , Html.p
                 []
                 [ Html.label
@@ -284,6 +278,28 @@ languageSwitcher lang =
             [ button' English "English"
             , button' French "Français"
             ]
+
+
+helpText : Language -> String
+helpText lang =
+    case lang of
+        English ->
+            """Turtle commands:
+            Forward <distance>,
+            Left <angle>,
+            Right <angle>,
+            PenUp,
+            PenDown
+            """
+
+        French ->
+            """Commandes de la tortue :
+            Avance <distance>,
+            Gauche <angle>,
+            Droite <angle>,
+            LeveStylo,
+            BaisseStylo
+            """
 
 
 
