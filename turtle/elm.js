@@ -10891,12 +10891,62 @@ var _user$project$Translation$translate = F2(
 							_elm_lang$core$Basics$toString(_p3)));
 				case 'PenUp':
 					return A2(_user$project$Translation$TranslationSet, 'PenUp', 'LeveStylo');
-				default:
+				case 'PenDown':
 					return A2(_user$project$Translation$TranslationSet, 'PenDown', 'BaisseStylo');
+				case 'ParseFloatError':
+					var _p5 = _p0._1;
+					var _p4 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Line ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p4),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									': the string \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p5, '\' doesn\'t look like a valid number')))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Ligne ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p4),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' : la chaîne \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p5, '\' n\'a pas l\'air d\'un nombre')))));
+				default:
+					var _p7 = _p0._1;
+					var _p6 = _p0._0;
+					return A2(
+						_user$project$Translation$TranslationSet,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Line ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p6),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									': could not understand the command \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p7, '\'')))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Ligne ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p6),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' : impossible de comprendre la commande \'',
+									A2(_elm_lang$core$Basics_ops['++'], _p7, '\'')))));
 			}
 		}();
-		var _p4 = lang;
-		if (_p4.ctor === 'English') {
+		var _p8 = lang;
+		if (_p8.ctor === 'English') {
 			return translationSet.english;
 		} else {
 			return translationSet.french;
@@ -10904,6 +10954,14 @@ var _user$project$Translation$translate = F2(
 	});
 var _user$project$Translation$French = {ctor: 'French'};
 var _user$project$Translation$English = {ctor: 'English'};
+var _user$project$Translation$ParseFloatError = F2(
+	function (a, b) {
+		return {ctor: 'ParseFloatError', _0: a, _1: b};
+	});
+var _user$project$Translation$ParseCommandError = F2(
+	function (a, b) {
+		return {ctor: 'ParseCommandError', _0: a, _1: b};
+	});
 var _user$project$Translation$PenDown = {ctor: 'PenDown'};
 var _user$project$Translation$PenUp = {ctor: 'PenUp'};
 var _user$project$Translation$Right = function (a) {
@@ -11152,7 +11210,10 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									_elm_lang$core$Basics$toString(_p11._0),
-									A2(_elm_lang$core$Basics_ops['++'], ': ', _p11._1._0))),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										': ',
+										_elm_lang$core$Basics$toString(_p11._1._0)))),
 							errors),
 							_v21 = moves,
 							_v22 = _p12;
@@ -11337,6 +11398,25 @@ var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
 };
+var _user$project$Main$ParseFloatError = function (a) {
+	return {ctor: 'ParseFloatError', _0: a};
+};
+var _user$project$Main$stringToFloat = function (str) {
+	var errorMessage = function (_p20) {
+		return _user$project$Main$ParseFloatError(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'The string \'',
+				A2(_elm_lang$core$Basics_ops['++'], str, '\' doesn\'t look like a number')));
+	};
+	return A2(
+		_elm_lang$core$Result$formatError,
+		errorMessage,
+		_elm_lang$core$String$toFloat(str));
+};
+var _user$project$Main$ParseCommandError = function (a) {
+	return {ctor: 'ParseCommandError', _0: a};
+};
 var _user$project$Main$PenDown = {ctor: 'PenDown'};
 var _user$project$Main$PenUp = {ctor: 'PenUp'};
 var _user$project$Main$Right = function (a) {
@@ -11349,43 +11429,43 @@ var _user$project$Main$Forward = function (a) {
 	return {ctor: 'Forward', _0: a};
 };
 var _user$project$Main$parseCommand = function (command) {
-	var _p20 = A2(_elm_lang$core$String$split, ' ', command);
+	var _p21 = A2(_elm_lang$core$String$split, ' ', command);
 	_v28_10:
 	do {
-		if (_p20.ctor === '::') {
-			if (_p20._1.ctor === '::') {
-				if (_p20._1._1.ctor === '[]') {
-					switch (_p20._0) {
+		if (_p21.ctor === '::') {
+			if (_p21._1.ctor === '::') {
+				if (_p21._1._1.ctor === '[]') {
+					switch (_p21._0) {
 						case 'Forward':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						case 'Avance':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						case 'Left':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						case 'Gauche':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						case 'Right':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						case 'Droite':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p20._1._0));
+								_user$project$Main$stringToFloat(_p21._1._0));
 						default:
 							break _v28_10;
 					}
@@ -11393,7 +11473,7 @@ var _user$project$Main$parseCommand = function (command) {
 					break _v28_10;
 				}
 			} else {
-				switch (_p20._0) {
+				switch (_p21._0) {
 					case 'PenUp':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'LeveStylo':
@@ -11410,7 +11490,12 @@ var _user$project$Main$parseCommand = function (command) {
 			break _v28_10;
 		}
 	} while(false);
-	return _elm_lang$core$Result$Err('Could not parse the command');
+	return _elm_lang$core$Result$Err(
+		_user$project$Main$ParseCommandError(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'Could not understand the command \'',
+				A2(_elm_lang$core$Basics_ops['++'], command, '\''))));
 };
 var _user$project$Main$commandsToMoves = function (commands) {
 	return A2(
@@ -11428,9 +11513,9 @@ var _user$project$Main$commandsToMoves = function (commands) {
 var _user$project$Main$view = function (model) {
 	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
 	var parsed = _user$project$Main$commandsToMoves(commands);
-	var _p21 = _user$project$Main$splitMovesFromErrors(parsed);
-	var errors = _p21._0;
-	var moves = _p21._1;
+	var _p22 = _user$project$Main$splitMovesFromErrors(parsed);
+	var errors = _p22._0;
+	var moves = _p22._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(

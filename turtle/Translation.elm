@@ -24,6 +24,8 @@ type TranslationId
     | Right Float
     | PenUp
     | PenDown
+    | ParseCommandError Int String
+    | ParseFloatError Int String
 
 
 translate : Language -> TranslationId -> String
@@ -85,6 +87,36 @@ translate lang trans =
 
                 PenDown ->
                     TranslationSet "PenDown" "BaisseStylo"
+
+                ParseFloatError line str ->
+                    TranslationSet
+                        ("Line "
+                            ++ (toString line)
+                            ++ ": the string '"
+                            ++ str
+                            ++ "' doesn't look like a valid number"
+                        )
+                        ("Ligne "
+                            ++ (toString line)
+                            ++ " : la chaîne '"
+                            ++ str
+                            ++ "' n'a pas l'air d'un nombre"
+                        )
+
+                ParseCommandError line str ->
+                    TranslationSet
+                        ("Line "
+                            ++ (toString line)
+                            ++ ": could not understand the command '"
+                            ++ str
+                            ++ "'"
+                        )
+                        ("Ligne "
+                            ++ (toString line)
+                            ++ " : impossible de comprendre la commande '"
+                            ++ str
+                            ++ "'"
+                        )
     in
         case lang of
             English ->

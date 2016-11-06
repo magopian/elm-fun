@@ -25,6 +25,11 @@ type Msg
     | SetLanguage T.Language
 
 
+type Error
+    = ParseCommandError String
+    | ParseFloatError String
+
+
 type alias Model =
     { commands : List String
     , drawTurtle : Bool
@@ -247,26 +252,41 @@ drawPath path =
     path |> Collage.traced Collage.defaultLine
 
 
-parseCommand : String -> Result String Step
+stringToFloat : String -> Result Error Float
+stringToFloat str =
+    -- This function is needed to "map" the error to our own type, with our own
+    -- message.
+    let
+        errorMessage _ =
+            "The string '"
+                ++ str
+                ++ "' doesn't look like a number"
+                |> ParseFloatError
+    in
+        String.toFloat str
+            |> Result.formatError errorMessage
+
+
+parseCommand : String -> Result Error Step
 parseCommand command =
     case String.split " " command of
         [ "Forward", distance ] ->
-            Result.map Forward (String.toFloat distance)
+            Result.map Forward (stringToFloat distance)
 
         [ "Avance", distance ] ->
-            Result.map Forward (String.toFloat distance)
+            Result.map Forward (stringToFloat distance)
 
         [ "Left", angle ] ->
-            Result.map Left (String.toFloat angle)
+            Result.map Left (stringToFloat angle)
 
         [ "Gauche", angle ] ->
-            Result.map Left (String.toFloat angle)
+            Result.map Left (stringToFloat angle)
 
         [ "Right", angle ] ->
-            Result.map Right (String.toFloat angle)
+            Result.map Right (stringToFloat angle)
 
         [ "Droite", angle ] ->
-            Result.map Right (String.toFloat angle)
+            Result.map Right (stringToFloat angle)
 
         [ "PenUp" ] ->
             Ok PenUp
@@ -281,10 +301,14 @@ parseCommand command =
             Ok PenDown
 
         _ ->
-            Err "Could not parse the command"
+            "Could not understand the command '"
+                ++ command
+                ++ "'"
+                |> ParseCommandError
+                |> Err
 
 
-commandsToMoves : List String -> List ( Int, Result String Step )
+commandsToMoves : List String -> List ( Int, Result Error Step )
 commandsToMoves commands =
     List.indexedMap
         (\i command ->
@@ -294,14 +318,14 @@ commandsToMoves commands =
 
 
 splitMovesFromErrors :
-    List ( Int, Result String Step )
+    List ( Int, Result Error Step )
     -> ( List String, List Step )
 splitMovesFromErrors movesAndErrors =
     let
         splitMovesFromErrors' :
             List String
             -> List Step
-            -> List ( Int, Result String Step )
+            -> List ( Int, Result Error Step )
             -> ( List String, List Step )
         splitMovesFromErrors' errors moves movesAndErrors =
             case movesAndErrors of
@@ -318,7 +342,7 @@ splitMovesFromErrors movesAndErrors =
 
                         ( i, Err msg ) ->
                             splitMovesFromErrors'
-                                (("Line " ++ (toString i) ++ ": " ++ msg)
+                                (("Line " ++ (toString i) ++ ": " ++ (toString msg))
                                     :: errors
                                 )
                                 moves
