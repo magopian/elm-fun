@@ -9,6 +9,7 @@ import Html.Attributes
 import Html.Events
 import List
 import String
+import Translation as T
 
 
 -- Update
@@ -20,19 +21,14 @@ type Msg
     | LoadStar
     | LoadElm
     | DrawTurtle Bool
-    | SetLanguage Language
+    | SetLanguage T.Language
 
 
 type alias Model =
     { commands : List String
     , drawTurtle : Bool
-    , lang : Language
+    , lang : T.Language
     }
-
-
-type Language
-    = English
-    | French
 
 
 turtle =
@@ -139,10 +135,10 @@ init { lang, hash } =
         language =
             case langCode of
                 "fr" ->
-                    French
+                    T.French
 
                 _ ->
-                    English
+                    T.English
 
         defaultModel =
             Model house True language
@@ -209,7 +205,7 @@ view model =
             [ languageSwitcher model.lang
             , Html.p
                 []
-                [ Html.text <| helpText model.lang ]
+                [ Html.text <| T.translate model.lang T.TurtleCommands ]
             , Html.p
                 []
                 [ Html.label
@@ -220,7 +216,7 @@ view model =
                         , Html.Events.onCheck DrawTurtle
                         ]
                         []
-                    , Html.text "Display the 'turtle'?"
+                    , Html.text <| T.translate model.lang T.DisplayTurtle
                     ]
                 ]
             , Html.textarea
@@ -240,26 +236,26 @@ view model =
                     )
             , Html.button
                 [ Html.Events.onClick LoadHouse ]
-                [ Html.text "house" ]
+                [ Html.text <| T.translate model.lang T.House ]
             , Html.button
                 [ Html.Events.onClick LoadStar ]
-                [ Html.text "star" ]
+                [ Html.text <| T.translate model.lang T.Star ]
             , Html.button
                 [ Html.Events.onClick LoadElm ]
-                [ Html.text "Elm" ]
+                [ Html.text <| T.translate model.lang T.Elm ]
             , Html.p
                 []
                 [ Html.a
                     [ Html.Attributes.href
                         (urlFromCommands model.commands model.lang)
                     ]
-                    [ Html.text "Share url" ]
+                    [ Html.text <| T.translate model.lang T.ShareUrl ]
                 ]
             , Html.pre [] [ Html.text <| String.join "\n" errors ]
             ]
 
 
-languageSwitcher : Language -> Html Msg
+languageSwitcher : T.Language -> Html Msg
 languageSwitcher lang =
     let
         -- Check if a language is the current language
@@ -275,31 +271,9 @@ languageSwitcher lang =
     in
         Html.div
             []
-            [ button' English "English"
-            , button' French "Français"
+            [ button' T.English "English"
+            , button' T.French "Français"
             ]
-
-
-helpText : Language -> String
-helpText lang =
-    case lang of
-        English ->
-            """Turtle commands:
-            Forward <distance>,
-            Left <angle>,
-            Right <angle>,
-            PenUp,
-            PenDown
-            """
-
-        French ->
-            """Commandes de la tortue :
-            Avance <distance>,
-            Gauche <angle>,
-            Droite <angle>,
-            LeveStylo,
-            BaisseStylo
-            """
 
 
 
@@ -502,15 +476,15 @@ movesToPaths moves =
         movesToPaths' ( 0, 0 ) 90 True [] moves
 
 
-urlFromCommands : List String -> Language -> String
+urlFromCommands : List String -> T.Language -> String
 urlFromCommands commands lang =
     let
         langStr =
             case lang of
-                English ->
+                T.English ->
                     "en"
 
-                French ->
+                T.French ->
                     "fr"
     in
         "?hash="

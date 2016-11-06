@@ -10832,6 +10832,45 @@ var _truqu$elm_base64$Base64$encode = function (s) {
 					_truqu$elm_base64$Base64$toCodeList(s)))));
 };
 
+var _user$project$Translation$TranslationSet = F2(
+	function (a, b) {
+		return {english: a, french: b};
+	});
+var _user$project$Translation$translate = F2(
+	function (lang, trans) {
+		var translationSet = function () {
+			var _p0 = trans;
+			switch (_p0.ctor) {
+				case 'TurtleCommands':
+					return A2(_user$project$Translation$TranslationSet, 'Turtle commands:\n                        Forward <distance>,\n                        Left <angle>,\n                        Right <angle>,\n                        PenUp,\n                        PenDown\n                        ', 'Commandes de la tortue :\n                        Avance <distance>,\n                        Gauche <angle>,\n                        Droite <angle>,\n                        LeveStylo,\n                        BaisseStylo\n                        ');
+				case 'DisplayTurtle':
+					return A2(_user$project$Translation$TranslationSet, 'Display the \'turtle\'?', 'Afficher la \'tortue\' ?');
+				case 'ShareUrl':
+					return A2(_user$project$Translation$TranslationSet, 'Share url', 'Lien de partage');
+				case 'House':
+					return A2(_user$project$Translation$TranslationSet, 'House', 'Maison');
+				case 'Star':
+					return A2(_user$project$Translation$TranslationSet, 'Star', 'Étoile');
+				default:
+					return A2(_user$project$Translation$TranslationSet, 'Elm', 'Elm');
+			}
+		}();
+		var _p1 = lang;
+		if (_p1.ctor === 'English') {
+			return translationSet.english;
+		} else {
+			return translationSet.french;
+		}
+	});
+var _user$project$Translation$French = {ctor: 'French'};
+var _user$project$Translation$English = {ctor: 'English'};
+var _user$project$Translation$Elm = {ctor: 'Elm'};
+var _user$project$Translation$Star = {ctor: 'Star'};
+var _user$project$Translation$House = {ctor: 'House'};
+var _user$project$Translation$ShareUrl = {ctor: 'ShareUrl'};
+var _user$project$Translation$DisplayTurtle = {ctor: 'DisplayTurtle'};
+var _user$project$Translation$TurtleCommands = {ctor: 'TurtleCommands'};
+
 var _user$project$Main$urlFromCommands = F2(
 	function (commands, lang) {
 		var langStr = function () {
@@ -10998,14 +11037,6 @@ var _user$project$Main$drawPath = function (path) {
 var _user$project$Main$drawShape = function (shape) {
 	return A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, shape);
 };
-var _user$project$Main$helpText = function (lang) {
-	var _p13 = lang;
-	if (_p13.ctor === 'English') {
-		return 'Turtle commands:\n            Forward <distance>,\n            Left <angle>,\n            Right <angle>,\n            PenUp,\n            PenDown\n            ';
-	} else {
-		return 'Commandes de la tortue :\n            Avance <distance>,\n            Gauche <angle>,\n            Droite <angle>,\n            LeveStylo,\n            BaisseStylo\n            ';
-	}
-};
 var _user$project$Main$elm = _elm_lang$core$Native_List.fromArray(
 	['Left 90', 'PenUp', 'Forward 100', 'PenDown', 'Forward 50', 'Right 90', 'Forward 100', 'Right 90', 'Forward 50', 'Left 180', 'Forward 50', 'Left 90', 'Forward 50', 'Left 90', 'Forward 40', 'Left 180', 'Forward 40', 'Left 90', 'Forward 50', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Left 180', 'Forward 100', 'Left 90', 'Forward 50', 'PenUp', 'Forward 50', 'PenDown', 'Left 90', 'Forward 100', 'Right 140', 'Forward 60', 'Left 100', 'Forward 60', 'Right 140', 'Forward 100']);
 var _user$project$Main$star = _elm_lang$core$Native_List.fromArray(
@@ -11014,15 +11045,15 @@ var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
 	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p14 = msg;
-		switch (_p14.ctor) {
+		var _p13 = msg;
+		switch (_p13.ctor) {
 			case 'CommandsChange':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							commands: A2(_elm_lang$core$String$split, '\n', _p14._0)
+							commands: A2(_elm_lang$core$String$split, '\n', _p13._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -11055,7 +11086,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{drawTurtle: _p14._0}),
+						{drawTurtle: _p13._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			default:
@@ -11063,7 +11094,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{lang: _p14._0}),
+						{lang: _p13._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
@@ -11074,57 +11105,39 @@ var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {commands: a, drawTurtle: b, lang: c};
 	});
-var _user$project$Main$Flags = F2(
-	function (a, b) {
-		return {lang: a, hash: b};
-	});
-var _user$project$Main$SetLanguage = function (a) {
-	return {ctor: 'SetLanguage', _0: a};
-};
-var _user$project$Main$DrawTurtle = function (a) {
-	return {ctor: 'DrawTurtle', _0: a};
-};
-var _user$project$Main$LoadElm = {ctor: 'LoadElm'};
-var _user$project$Main$LoadStar = {ctor: 'LoadStar'};
-var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
-var _user$project$Main$CommandsChange = function (a) {
-	return {ctor: 'CommandsChange', _0: a};
-};
-var _user$project$Main$French = {ctor: 'French'};
-var _user$project$Main$English = {ctor: 'English'};
-var _user$project$Main$init = function (_p15) {
-	var _p16 = _p15;
-	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p16.lang);
+var _user$project$Main$init = function (_p14) {
+	var _p15 = _p14;
+	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p15.lang);
 	var language = function () {
-		var _p17 = langCode;
-		if (_p17 === 'fr') {
-			return _user$project$Main$French;
+		var _p16 = langCode;
+		if (_p16 === 'fr') {
+			return _user$project$Translation$French;
 		} else {
-			return _user$project$Main$English;
+			return _user$project$Translation$English;
 		}
 	}();
 	var defaultModel = A3(_user$project$Main$Model, _user$project$Main$house, true, language);
-	var _p18 = _p16.hash;
-	if (_p18.ctor === 'Nothing') {
+	var _p17 = _p15.hash;
+	if (_p17.ctor === 'Nothing') {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			defaultModel,
 			_elm_lang$core$Native_List.fromArray(
 				[]));
 	} else {
-		var _p19 = _truqu$elm_base64$Base64$decode(_p18._0);
-		if (_p19.ctor === 'Ok') {
+		var _p18 = _truqu$elm_base64$Base64$decode(_p17._0);
+		if (_p18.ctor === 'Ok') {
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
 				A3(
 					_user$project$Main$Model,
-					A2(_elm_lang$core$String$split, '\n', _p19._0),
+					A2(_elm_lang$core$String$split, '\n', _p18._0),
 					true,
 					language),
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		} else {
-			var _p20 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p19._0);
+			var _p19 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p18._0);
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
 				defaultModel,
@@ -11132,6 +11145,13 @@ var _user$project$Main$init = function (_p15) {
 					[]));
 		}
 	}
+};
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {lang: a, hash: b};
+	});
+var _user$project$Main$SetLanguage = function (a) {
+	return {ctor: 'SetLanguage', _0: a};
 };
 var _user$project$Main$languageSwitcher = function (lang) {
 	var isCurrent = function (lang$) {
@@ -11159,9 +11179,18 @@ var _user$project$Main$languageSwitcher = function (lang) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(button$, _user$project$Main$English, 'English'),
-				A2(button$, _user$project$Main$French, 'Français')
+				A2(button$, _user$project$Translation$English, 'English'),
+				A2(button$, _user$project$Translation$French, 'Français')
 			]));
+};
+var _user$project$Main$DrawTurtle = function (a) {
+	return {ctor: 'DrawTurtle', _0: a};
+};
+var _user$project$Main$LoadElm = {ctor: 'LoadElm'};
+var _user$project$Main$LoadStar = {ctor: 'LoadStar'};
+var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
+var _user$project$Main$CommandsChange = function (a) {
+	return {ctor: 'CommandsChange', _0: a};
 };
 var _user$project$Main$PenDown = {ctor: 'PenDown'};
 var _user$project$Main$PenUp = {ctor: 'PenUp'};
@@ -11175,51 +11204,51 @@ var _user$project$Main$Forward = function (a) {
 	return {ctor: 'Forward', _0: a};
 };
 var _user$project$Main$parseCommand = function (command) {
-	var _p21 = A2(_elm_lang$core$String$split, ' ', command);
-	_v29_10:
+	var _p20 = A2(_elm_lang$core$String$split, ' ', command);
+	_v28_10:
 	do {
-		if (_p21.ctor === '::') {
-			if (_p21._1.ctor === '::') {
-				if (_p21._1._1.ctor === '[]') {
-					switch (_p21._0) {
+		if (_p20.ctor === '::') {
+			if (_p20._1.ctor === '::') {
+				if (_p20._1._1.ctor === '[]') {
+					switch (_p20._0) {
 						case 'Forward':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Avance':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Left':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Gauche':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Right':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Droite':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p21._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						default:
-							break _v29_10;
+							break _v28_10;
 					}
 				} else {
-					break _v29_10;
+					break _v28_10;
 				}
 			} else {
-				switch (_p21._0) {
+				switch (_p20._0) {
 					case 'PenUp':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'LeveStylo':
@@ -11229,11 +11258,11 @@ var _user$project$Main$parseCommand = function (command) {
 					case 'BaisseStylo':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
 					default:
-						break _v29_10;
+						break _v28_10;
 				}
 			}
 		} else {
-			break _v29_10;
+			break _v28_10;
 		}
 	} while(false);
 	return _elm_lang$core$Result$Err('Could not parse the command');
@@ -11254,9 +11283,9 @@ var _user$project$Main$commandsToMoves = function (commands) {
 var _user$project$Main$view = function (model) {
 	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
 	var parsed = _user$project$Main$commandsToMoves(commands);
-	var _p22 = _user$project$Main$splitMovesFromErrors(parsed);
-	var errors = _p22._0;
-	var moves = _p22._1;
+	var _p21 = _user$project$Main$splitMovesFromErrors(parsed);
+	var errors = _p21._0;
+	var moves = _p21._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -11271,7 +11300,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						_user$project$Main$helpText(model.lang))
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$TurtleCommands))
 					])),
 				A2(
 				_elm_lang$html$Html$p,
@@ -11295,7 +11324,8 @@ var _user$project$Main$view = function (model) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[])),
-								_elm_lang$html$Html$text('Display the \'turtle\'?')
+								_elm_lang$html$Html$text(
+								A2(_user$project$Translation$translate, model.lang, _user$project$Translation$DisplayTurtle))
 							]))
 					])),
 				A2(
@@ -11336,7 +11366,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('house')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$House))
 					])),
 				A2(
 				_elm_lang$html$Html$button,
@@ -11346,7 +11377,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('star')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$Star))
 					])),
 				A2(
 				_elm_lang$html$Html$button,
@@ -11356,7 +11388,8 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Elm')
+						_elm_lang$html$Html$text(
+						A2(_user$project$Translation$translate, model.lang, _user$project$Translation$Elm))
 					])),
 				A2(
 				_elm_lang$html$Html$p,
@@ -11373,7 +11406,8 @@ var _user$project$Main$view = function (model) {
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text('Share url')
+								_elm_lang$html$Html$text(
+								A2(_user$project$Translation$translate, model.lang, _user$project$Translation$ShareUrl))
 							]))
 					])),
 				A2(
