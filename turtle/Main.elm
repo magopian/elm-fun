@@ -357,7 +357,7 @@ splitMovesFromErrors movesAndErrors =
 
                         ( i, Err error ) ->
                             splitMovesFromErrors'
-                                ((ErrorMessage i error) :: errors)
+                                ((ErrorMessage (i + 1) error) :: errors)
                                 moves
                                 tail
     in

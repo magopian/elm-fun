@@ -11295,7 +11295,7 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 					} else {
 						var _v23 = A2(
 							_elm_lang$core$List_ops['::'],
-							A2(_user$project$Main$ErrorMessage, _p16._0, _p16._1._0),
+							A2(_user$project$Main$ErrorMessage, _p16._0 + 1, _p16._1._0),
 							errors),
 							_v24 = moves,
 							_v25 = _p17;
