@@ -125,26 +125,43 @@ elm =
 
 
 type alias Flags =
-    { hash : String }
+    { lang : Maybe String
+    , hash : Maybe String
+    }
 
 
 init : Flags -> ( Model, Cmd Msg )
-init { hash } =
-    case hash of
-        "" ->
-            (Model house True English) ! []
+init { lang, hash } =
+    let
+        langCode =
+            Maybe.withDefault "en" lang
 
-        hash ->
-            case Base64.decode hash of
-                Ok commands ->
-                    (Model (String.split "\n" commands) True English) ! []
+        language =
+            case langCode of
+                "fr" ->
+                    French
 
-                Err msg ->
-                    let
-                        _ =
-                            Debug.log "failed to decode hash" msg
-                    in
-                        (Model house True English) ! []
+                _ ->
+                    English
+
+        defaultModel =
+            Model house True language
+    in
+        case hash of
+            Nothing ->
+                defaultModel ! []
+
+            Just hash ->
+                case Base64.decode hash of
+                    Ok commands ->
+                        (Model (String.split "\n" commands) True language) ! []
+
+                    Err msg ->
+                        let
+                            _ =
+                                Debug.log "failed to decode hash" msg
+                        in
+                            defaultModel ! []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -239,7 +256,9 @@ view model =
             , Html.p
                 []
                 [ Html.a
-                    [ Html.Attributes.href (urlFromCommands model.commands) ]
+                    [ Html.Attributes.href
+                        (urlFromCommands model.commands model.lang)
+                    ]
                     [ Html.text "Share url" ]
                 ]
             , Html.pre [] [ Html.text <| String.join "\n" errors ]
@@ -452,11 +471,22 @@ movesToPaths moves =
         movesToPaths' ( 0, 0 ) 90 True [] moves
 
 
-urlFromCommands : List String -> String
-urlFromCommands commands =
-    "#"
-        ++ (commands
-                |> String.join "\n"
-                |> Base64.encode
-                |> Result.withDefault ""
-           )
+urlFromCommands : List String -> Language -> String
+urlFromCommands commands lang =
+    let
+        langStr =
+            case lang of
+                English ->
+                    "en"
+
+                French ->
+                    "fr"
+    in
+        "?hash="
+            ++ (commands
+                    |> String.join "\n"
+                    |> Base64.encode
+                    |> Result.withDefault ""
+               )
+            ++ "&lang="
+            ++ langStr

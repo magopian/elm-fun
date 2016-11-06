@@ -10832,30 +10832,42 @@ var _truqu$elm_base64$Base64$encode = function (s) {
 					_truqu$elm_base64$Base64$toCodeList(s)))));
 };
 
-var _user$project$Main$urlFromCommands = function (commands) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'#',
-		A2(
-			_elm_lang$core$Result$withDefault,
-			'',
-			_truqu$elm_base64$Base64$encode(
-				A2(_elm_lang$core$String$join, '\n', commands))));
-};
+var _user$project$Main$urlFromCommands = F2(
+	function (commands, lang) {
+		var langStr = function () {
+			var _p0 = lang;
+			if (_p0.ctor === 'English') {
+				return 'en';
+			} else {
+				return 'fr';
+			}
+		}();
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'?hash=',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_elm_lang$core$Result$withDefault,
+					'',
+					_truqu$elm_base64$Base64$encode(
+						A2(_elm_lang$core$String$join, '\n', commands))),
+				A2(_elm_lang$core$Basics_ops['++'], '&lang=', langStr)));
+	});
 var _user$project$Main$toPath = F4(
-	function (_p0, currentAngle, draw, step) {
-		var _p1 = _p0;
-		var _p4 = _p1;
-		var _p2 = step;
-		switch (_p2.ctor) {
+	function (_p1, currentAngle, draw, step) {
+		var _p2 = _p1;
+		var _p5 = _p2;
+		var _p3 = step;
+		switch (_p3.ctor) {
 			case 'Forward':
-				var _p3 = _p2._0;
+				var _p4 = _p3._0;
 				var newPoint = {
 					ctor: '_Tuple2',
-					_0: _p1._0 + (_elm_lang$core$Basics$cos(
-						_elm_lang$core$Basics$degrees(currentAngle)) * _p3),
-					_1: _p1._1 + (_elm_lang$core$Basics$sin(
-						_elm_lang$core$Basics$degrees(currentAngle)) * _p3)
+					_0: _p2._0 + (_elm_lang$core$Basics$cos(
+						_elm_lang$core$Basics$degrees(currentAngle)) * _p4),
+					_1: _p2._1 + (_elm_lang$core$Basics$sin(
+						_elm_lang$core$Basics$degrees(currentAngle)) * _p4)
 				};
 				return {
 					ctor: '_Tuple4',
@@ -10863,16 +10875,16 @@ var _user$project$Main$toPath = F4(
 					_1: currentAngle,
 					_2: draw,
 					_3: _elm_lang$core$Maybe$Just(
-						A2(_evancz$elm_graphics$Collage$segment, _p4, newPoint))
+						A2(_evancz$elm_graphics$Collage$segment, _p5, newPoint))
 				};
 			case 'Left':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle + _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle + _p3._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
 			case 'Right':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle - _p2._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle - _p3._0, _2: draw, _3: _elm_lang$core$Maybe$Nothing};
 			case 'PenUp':
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: false, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle, _2: false, _3: _elm_lang$core$Maybe$Nothing};
 			default:
-				return {ctor: '_Tuple4', _0: _p4, _1: currentAngle, _2: true, _3: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple4', _0: _p5, _1: currentAngle, _2: true, _3: _elm_lang$core$Maybe$Nothing};
 		}
 	});
 var _user$project$Main$movesToPaths = function (moves) {
@@ -10880,38 +10892,38 @@ var _user$project$Main$movesToPaths = function (moves) {
 		function (point, angle, draw, paths, moves) {
 			movesToPaths$:
 			while (true) {
-				var _p5 = moves;
-				if (_p5.ctor === '::') {
-					var _p8 = _p5._1;
-					var _p6 = A4(_user$project$Main$toPath, point, angle, draw, _p5._0);
-					var newPoint = _p6._0;
-					var newAngle = _p6._1;
-					var newDraw = _p6._2;
-					var path = _p6._3;
-					var _p7 = path;
-					if (_p7.ctor === 'Nothing') {
-						var _v4 = newPoint,
-							_v5 = newAngle,
-							_v6 = newDraw,
-							_v7 = paths,
-							_v8 = _p8;
-						point = _v4;
-						angle = _v5;
-						draw = _v6;
-						paths = _v7;
-						moves = _v8;
+				var _p6 = moves;
+				if (_p6.ctor === '::') {
+					var _p9 = _p6._1;
+					var _p7 = A4(_user$project$Main$toPath, point, angle, draw, _p6._0);
+					var newPoint = _p7._0;
+					var newAngle = _p7._1;
+					var newDraw = _p7._2;
+					var path = _p7._3;
+					var _p8 = path;
+					if (_p8.ctor === 'Nothing') {
+						var _v5 = newPoint,
+							_v6 = newAngle,
+							_v7 = newDraw,
+							_v8 = paths,
+							_v9 = _p9;
+						point = _v5;
+						angle = _v6;
+						draw = _v7;
+						paths = _v8;
+						moves = _v9;
 						continue movesToPaths$;
 					} else {
-						var _v9 = newPoint,
-							_v10 = newAngle,
-							_v11 = newDraw,
-							_v12 = newDraw ? A2(_elm_lang$core$List_ops['::'], _p7._0, paths) : paths,
-							_v13 = _p8;
-						point = _v9;
-						angle = _v10;
-						draw = _v11;
-						paths = _v12;
-						moves = _v13;
+						var _v10 = newPoint,
+							_v11 = newAngle,
+							_v12 = newDraw,
+							_v13 = newDraw ? A2(_elm_lang$core$List_ops['::'], _p8._0, paths) : paths,
+							_v14 = _p9;
+						point = _v10;
+						angle = _v11;
+						draw = _v12;
+						paths = _v13;
+						moves = _v14;
 						continue movesToPaths$;
 					}
 				} else {
@@ -10933,40 +10945,40 @@ var _user$project$Main$splitMovesFromErrors = function (movesAndErrors) {
 		function (errors, moves, movesAndErrors) {
 			splitMovesFromErrors$:
 			while (true) {
-				var _p9 = movesAndErrors;
-				if (_p9.ctor === '[]') {
+				var _p10 = movesAndErrors;
+				if (_p10.ctor === '[]') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$List$reverse(errors),
 						_1: _elm_lang$core$List$reverse(moves)
 					};
 				} else {
-					var _p11 = _p9._1;
-					var _p10 = _p9._0;
-					if (_p10._1.ctor === 'Ok') {
-						var _v16 = errors,
-							_v17 = A2(_elm_lang$core$List_ops['::'], _p10._1._0, moves),
-							_v18 = _p11;
-						errors = _v16;
-						moves = _v17;
-						movesAndErrors = _v18;
+					var _p12 = _p10._1;
+					var _p11 = _p10._0;
+					if (_p11._1.ctor === 'Ok') {
+						var _v17 = errors,
+							_v18 = A2(_elm_lang$core$List_ops['::'], _p11._1._0, moves),
+							_v19 = _p12;
+						errors = _v17;
+						moves = _v18;
+						movesAndErrors = _v19;
 						continue splitMovesFromErrors$;
 					} else {
-						var _v19 = A2(
+						var _v20 = A2(
 							_elm_lang$core$List_ops['::'],
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'Line ',
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p10._0),
-									A2(_elm_lang$core$Basics_ops['++'], ': ', _p10._1._0))),
+									_elm_lang$core$Basics$toString(_p11._0),
+									A2(_elm_lang$core$Basics_ops['++'], ': ', _p11._1._0))),
 							errors),
-							_v20 = moves,
-							_v21 = _p11;
-						errors = _v19;
-						moves = _v20;
-						movesAndErrors = _v21;
+							_v21 = moves,
+							_v22 = _p12;
+						errors = _v20;
+						moves = _v21;
+						movesAndErrors = _v22;
 						continue splitMovesFromErrors$;
 					}
 				}
@@ -10994,15 +11006,15 @@ var _user$project$Main$house = _elm_lang$core$Native_List.fromArray(
 	['Forward 100', 'Right 135', 'Forward 141.42', 'Left 135', 'Forward 100', 'Left 90', 'Forward 100', 'Right 135', 'Forward 70.71', 'Right 90', 'Forward 70.71', 'Right 90', 'Forward 141.42', 'Left 135', 'Forward 100']);
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p12 = msg;
-		switch (_p12.ctor) {
+		var _p13 = msg;
+		switch (_p13.ctor) {
 			case 'CommandsChange':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							commands: A2(_elm_lang$core$String$split, '\n', _p12._0)
+							commands: A2(_elm_lang$core$String$split, '\n', _p13._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -11035,7 +11047,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{drawTurtle: _p12._0}),
+						{drawTurtle: _p13._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			default:
@@ -11043,7 +11055,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{lang: _p12._0}),
+						{lang: _p13._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
@@ -11054,9 +11066,10 @@ var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {commands: a, drawTurtle: b, lang: c};
 	});
-var _user$project$Main$Flags = function (a) {
-	return {hash: a};
-};
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {lang: a, hash: b};
+	});
 var _user$project$Main$SetLanguage = function (a) {
 	return {ctor: 'SetLanguage', _0: a};
 };
@@ -11071,32 +11084,42 @@ var _user$project$Main$CommandsChange = function (a) {
 };
 var _user$project$Main$French = {ctor: 'French'};
 var _user$project$Main$English = {ctor: 'English'};
-var _user$project$Main$init = function (_p13) {
-	var _p14 = _p13;
-	var _p15 = _p14.hash;
-	if (_p15 === '') {
+var _user$project$Main$init = function (_p14) {
+	var _p15 = _p14;
+	var langCode = A2(_elm_lang$core$Maybe$withDefault, 'en', _p15.lang);
+	var language = function () {
+		var _p16 = langCode;
+		if (_p16 === 'fr') {
+			return _user$project$Main$French;
+		} else {
+			return _user$project$Main$English;
+		}
+	}();
+	var defaultModel = A3(_user$project$Main$Model, _user$project$Main$house, true, language);
+	var _p17 = _p15.hash;
+	if (_p17.ctor === 'Nothing') {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
-			A3(_user$project$Main$Model, _user$project$Main$house, true, _user$project$Main$English),
+			defaultModel,
 			_elm_lang$core$Native_List.fromArray(
 				[]));
 	} else {
-		var _p16 = _truqu$elm_base64$Base64$decode(_p15);
-		if (_p16.ctor === 'Ok') {
+		var _p18 = _truqu$elm_base64$Base64$decode(_p17._0);
+		if (_p18.ctor === 'Ok') {
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
 				A3(
 					_user$project$Main$Model,
-					A2(_elm_lang$core$String$split, '\n', _p16._0),
+					A2(_elm_lang$core$String$split, '\n', _p18._0),
 					true,
-					_user$project$Main$English),
+					language),
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		} else {
-			var _p17 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p16._0);
+			var _p19 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p18._0);
 			return A2(
 				_elm_lang$core$Platform_Cmd_ops['!'],
-				A3(_user$project$Main$Model, _user$project$Main$house, true, _user$project$Main$English),
+				defaultModel,
 				_elm_lang$core$Native_List.fromArray(
 					[]));
 		}
@@ -11144,46 +11167,46 @@ var _user$project$Main$Forward = function (a) {
 	return {ctor: 'Forward', _0: a};
 };
 var _user$project$Main$parseCommand = function (command) {
-	var _p18 = A2(_elm_lang$core$String$split, ' ', command);
-	_v26_5:
+	var _p20 = A2(_elm_lang$core$String$split, ' ', command);
+	_v28_5:
 	do {
-		if (_p18.ctor === '::') {
-			if (_p18._1.ctor === '::') {
-				if (_p18._1._1.ctor === '[]') {
-					switch (_p18._0) {
+		if (_p20.ctor === '::') {
+			if (_p20._1.ctor === '::') {
+				if (_p20._1._1.ctor === '[]') {
+					switch (_p20._0) {
 						case 'Forward':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Forward,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Left':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Left,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						case 'Right':
 							return A2(
 								_elm_lang$core$Result$map,
 								_user$project$Main$Right,
-								_elm_lang$core$String$toFloat(_p18._1._0));
+								_elm_lang$core$String$toFloat(_p20._1._0));
 						default:
-							break _v26_5;
+							break _v28_5;
 					}
 				} else {
-					break _v26_5;
+					break _v28_5;
 				}
 			} else {
-				switch (_p18._0) {
+				switch (_p20._0) {
 					case 'PenUp':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenUp);
 					case 'PenDown':
 						return _elm_lang$core$Result$Ok(_user$project$Main$PenDown);
 					default:
-						break _v26_5;
+						break _v28_5;
 				}
 			}
 		} else {
-			break _v26_5;
+			break _v28_5;
 		}
 	} while(false);
 	return _elm_lang$core$Result$Err('Could not parse the command');
@@ -11204,9 +11227,9 @@ var _user$project$Main$commandsToMoves = function (commands) {
 var _user$project$Main$view = function (model) {
 	var commands = model.drawTurtle ? A2(_elm_lang$core$Basics_ops['++'], model.commands, _user$project$Main$turtle) : model.commands;
 	var parsed = _user$project$Main$commandsToMoves(commands);
-	var _p19 = _user$project$Main$splitMovesFromErrors(parsed);
-	var errors = _p19._0;
-	var moves = _p19._1;
+	var _p21 = _user$project$Main$splitMovesFromErrors(parsed);
+	var errors = _p21._0;
+	var moves = _p21._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -11318,7 +11341,7 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html_Attributes$href(
-								_user$project$Main$urlFromCommands(model.commands))
+								A2(_user$project$Main$urlFromCommands, model.commands, model.lang))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -11346,10 +11369,31 @@ var _user$project$Main$main = {
 		}),
 	flags: A2(
 		_elm_lang$core$Json_Decode$andThen,
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'hash', _elm_lang$core$Json_Decode$string),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'hash',
+			_elm_lang$core$Json_Decode$oneOf(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string)
+					]))),
 		function (hash) {
-			return _elm_lang$core$Json_Decode$succeed(
-				{hash: hash});
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'lang',
+					_elm_lang$core$Json_Decode$oneOf(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+								A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string)
+							]))),
+				function (lang) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{hash: hash, lang: lang});
+				});
 		})
 };
 
