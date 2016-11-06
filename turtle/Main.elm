@@ -20,12 +20,19 @@ type Msg
     | LoadStar
     | LoadElm
     | DrawTurtle Bool
+    | SetLanguage Language
 
 
 type alias Model =
     { commands : List String
     , drawTurtle : Bool
+    , lang : Language
     }
+
+
+type Language
+    = English
+    | French
 
 
 turtle =
@@ -125,19 +132,19 @@ init : Flags -> ( Model, Cmd Msg )
 init { hash } =
     case hash of
         "" ->
-            (Model house True) ! []
+            (Model house True English) ! []
 
         hash ->
             case Base64.decode hash of
                 Ok commands ->
-                    (Model (String.split "\n" commands) True) ! []
+                    (Model (String.split "\n" commands) True English) ! []
 
                 Err msg ->
                     let
                         _ =
                             Debug.log "failed to decode hash" msg
                     in
-                        (Model house True) ! []
+                        (Model house True English) ! []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -157,6 +164,9 @@ update msg model =
 
         DrawTurtle bool ->
             { model | drawTurtle = bool } ! []
+
+        SetLanguage lang ->
+            { model | lang = lang } ! []
 
 
 
@@ -179,7 +189,8 @@ view model =
             splitMovesFromErrors parsed
     in
         Html.div []
-            [ Html.p
+            [ languageSwitcher model.lang
+            , Html.p
                 []
                 [ Html.text """Turtle commands:
                     Forward <distance>,
@@ -232,6 +243,27 @@ view model =
                     [ Html.text "Share url" ]
                 ]
             , Html.pre [] [ Html.text <| String.join "\n" errors ]
+            ]
+
+
+languageSwitcher : Language -> Html Msg
+languageSwitcher lang =
+    let
+        -- Check if a language is the current language
+        isCurrent lang' =
+            lang == lang'
+
+        button' lang' name =
+            Html.button
+                [ Html.Attributes.disabled (isCurrent lang')
+                , Html.Events.onClick (SetLanguage lang')
+                ]
+                [ Html.text name ]
+    in
+        Html.div
+            []
+            [ button' English "English"
+            , button' French "Français"
             ]
 
 

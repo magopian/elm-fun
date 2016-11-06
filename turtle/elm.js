@@ -11030,7 +11030,7 @@ var _user$project$Main$update = F2(
 						{commands: _user$project$Main$elm}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			default:
+			case 'DrawTurtle':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11038,46 +11038,27 @@ var _user$project$Main$update = F2(
 						{drawTurtle: _p12._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{lang: _p12._0}),
+					_elm_lang$core$Native_List.fromArray(
+						[]));
 		}
 	});
 var _user$project$Main$turtle = _elm_lang$core$Native_List.fromArray(
 	['Forward 10', 'Right 155', 'Forward 11.2', 'Right 115', 'Forward 9.4', 'Right 115', 'Forward 11.2', 'Left 25']);
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {commands: a, drawTurtle: b};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {commands: a, drawTurtle: b, lang: c};
 	});
-var _user$project$Main$init = function (_p13) {
-	var _p14 = _p13;
-	var _p15 = _p14.hash;
-	if (_p15 === '') {
-		return A2(
-			_elm_lang$core$Platform_Cmd_ops['!'],
-			A2(_user$project$Main$Model, _user$project$Main$house, true),
-			_elm_lang$core$Native_List.fromArray(
-				[]));
-	} else {
-		var _p16 = _truqu$elm_base64$Base64$decode(_p15);
-		if (_p16.ctor === 'Ok') {
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				A2(
-					_user$project$Main$Model,
-					A2(_elm_lang$core$String$split, '\n', _p16._0),
-					true),
-				_elm_lang$core$Native_List.fromArray(
-					[]));
-		} else {
-			var _p17 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p16._0);
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				A2(_user$project$Main$Model, _user$project$Main$house, true),
-				_elm_lang$core$Native_List.fromArray(
-					[]));
-		}
-	}
-};
 var _user$project$Main$Flags = function (a) {
 	return {hash: a};
+};
+var _user$project$Main$SetLanguage = function (a) {
+	return {ctor: 'SetLanguage', _0: a};
 };
 var _user$project$Main$DrawTurtle = function (a) {
 	return {ctor: 'DrawTurtle', _0: a};
@@ -11087,6 +11068,69 @@ var _user$project$Main$LoadStar = {ctor: 'LoadStar'};
 var _user$project$Main$LoadHouse = {ctor: 'LoadHouse'};
 var _user$project$Main$CommandsChange = function (a) {
 	return {ctor: 'CommandsChange', _0: a};
+};
+var _user$project$Main$French = {ctor: 'French'};
+var _user$project$Main$English = {ctor: 'English'};
+var _user$project$Main$init = function (_p13) {
+	var _p14 = _p13;
+	var _p15 = _p14.hash;
+	if (_p15 === '') {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			A3(_user$project$Main$Model, _user$project$Main$house, true, _user$project$Main$English),
+			_elm_lang$core$Native_List.fromArray(
+				[]));
+	} else {
+		var _p16 = _truqu$elm_base64$Base64$decode(_p15);
+		if (_p16.ctor === 'Ok') {
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				A3(
+					_user$project$Main$Model,
+					A2(_elm_lang$core$String$split, '\n', _p16._0),
+					true,
+					_user$project$Main$English),
+				_elm_lang$core$Native_List.fromArray(
+					[]));
+		} else {
+			var _p17 = A2(_elm_lang$core$Debug$log, 'failed to decode hash', _p16._0);
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				A3(_user$project$Main$Model, _user$project$Main$house, true, _user$project$Main$English),
+				_elm_lang$core$Native_List.fromArray(
+					[]));
+		}
+	}
+};
+var _user$project$Main$languageSwitcher = function (lang) {
+	var isCurrent = function (lang$) {
+		return _elm_lang$core$Native_Utils.eq(lang, lang$);
+	};
+	var button$ = F2(
+		function (lang$, name) {
+			return A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$disabled(
+						isCurrent(lang$)),
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$Main$SetLanguage(lang$))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(name)
+					]));
+		});
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(button$, _user$project$Main$English, 'English'),
+				A2(button$, _user$project$Main$French, 'Français')
+			]));
 };
 var _user$project$Main$PenDown = {ctor: 'PenDown'};
 var _user$project$Main$PenUp = {ctor: 'PenUp'};
@@ -11169,6 +11213,7 @@ var _user$project$Main$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				_user$project$Main$languageSwitcher(model.lang),
 				A2(
 				_elm_lang$html$Html$p,
 				_elm_lang$core$Native_List.fromArray(
