@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html
 import Html.Attributes
@@ -12,6 +12,7 @@ type Msg
     = SaveCredentials
     | UsernameChange String
     | PasswordChange String
+    | EncodedAuth String
 
 
 type alias Model =
@@ -50,10 +51,15 @@ update msg model =
                     ! []
 
         UsernameChange username ->
-            { model | username = username } ! []
+            { model | username = username }
+                ! [ b64encode <| username ++ ":" ++ model.password ]
 
         PasswordChange password ->
-            { model | password = password } ! []
+            { model | password = password }
+                ! [ b64encode <| model.username ++ ":" ++ password ]
+
+        EncodedAuth encoded ->
+            { model | encoded = encoded } ! []
 
 
 checkCredentials : String -> String -> Bool
@@ -72,7 +78,13 @@ authFromCredentials encoded =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    encoded EncodedAuth
+
+
+port b64encode : String -> Cmd msg
+
+
+port encoded : (String -> msg) -> Sub msg
 
 
 
@@ -86,14 +98,17 @@ view model =
         [ Html.div
             []
             [ Html.input
-                [ Html.Events.onInput UsernameChange ]
+                [ Html.Attributes.id "id_username"
+                , Html.Events.onInput UsernameChange
+                ]
                 []
             , Html.text " Username"
             ]
         , Html.div
             []
             [ Html.input
-                [ Html.Attributes.type_ "password"
+                [ Html.Attributes.id "id_password"
+                , Html.Attributes.type_ "password"
                 , Html.Events.onInput PasswordChange
                 ]
                 []
