@@ -5,7 +5,6 @@ import Collage
 import Element
 import Examples exposing (house, star, elm)
 import Html exposing (Html)
-import Html.App
 import Html.Attributes
 import Html.Events
 import List
@@ -146,7 +145,7 @@ view model =
                 [ Html.label
                     []
                     [ Html.input
-                        [ Html.Attributes.type' "checkbox"
+                        [ Html.Attributes.type_ "checkbox"
                         , Html.Attributes.checked model.drawTurtle
                         , Html.Events.onCheck DrawTurtle
                         ]
@@ -199,20 +198,20 @@ languageSwitcher : T.Language -> Html Msg
 languageSwitcher lang =
     let
         -- Check if a language is the current language
-        isCurrent lang' =
-            lang == lang'
+        isCurrent lang_ =
+            lang == lang_
 
-        button' lang' name =
+        button_ lang_ name =
             Html.button
-                [ Html.Attributes.disabled (isCurrent lang')
-                , Html.Events.onClick (SetLanguage lang')
+                [ Html.Attributes.disabled (isCurrent lang_)
+                , Html.Events.onClick (SetLanguage lang_)
                 ]
                 [ Html.text name ]
     in
         Html.div
             []
-            [ button' T.English "English"
-            , button' T.French "Français"
+            [ button_ T.English "English"
+            , button_ T.French "Français"
             ]
 
 
@@ -231,7 +230,7 @@ translateError lang { line, error } =
 
 
 main =
-    Html.App.programWithFlags
+    Html.programWithFlags
         { init = init
         , view = view
         , update = update
@@ -283,7 +282,7 @@ stringToFloat str =
             ParseFloatError str
     in
         String.toFloat str
-            |> Result.formatError errorMessage
+            |> Result.mapError errorMessage
 
 
 parseCommand : String -> Result Error Step
@@ -337,12 +336,12 @@ splitMovesFromErrors :
     -> ( List ErrorMessage, List Step )
 splitMovesFromErrors movesAndErrors =
     let
-        splitMovesFromErrors' :
+        splitMovesFromErrors_ :
             List ErrorMessage
             -> List Step
             -> List ( Int, Result Error Step )
             -> ( List ErrorMessage, List Step )
-        splitMovesFromErrors' errors moves movesAndErrors =
+        splitMovesFromErrors_ errors moves movesAndErrors =
             case movesAndErrors of
                 [] ->
                     ( List.reverse errors, List.reverse moves )
@@ -350,18 +349,18 @@ splitMovesFromErrors movesAndErrors =
                 head :: tail ->
                     case head of
                         ( _, Ok move ) ->
-                            splitMovesFromErrors'
+                            splitMovesFromErrors_
                                 errors
                                 (move :: moves)
                                 tail
 
                         ( i, Err error ) ->
-                            splitMovesFromErrors'
+                            splitMovesFromErrors_
                                 ((ErrorMessage (i + 1) error) :: errors)
                                 moves
                                 tail
     in
-        splitMovesFromErrors' [] [] movesAndErrors
+        splitMovesFromErrors_ [] [] movesAndErrors
 
 
 toPath :
@@ -401,14 +400,14 @@ toPath (( x, y ) as currentPoint) currentAngle draw step =
 movesToPaths : List Step -> List Collage.Path
 movesToPaths moves =
     let
-        movesToPaths' :
+        movesToPaths_ :
             Point
             -> Angle
             -> Bool
             -> List Collage.Path
             -> List Step
             -> List Collage.Path
-        movesToPaths' point angle draw paths moves =
+        movesToPaths_ point angle draw paths moves =
             case moves of
                 head :: tail ->
                     let
@@ -417,10 +416,10 @@ movesToPaths moves =
                     in
                         case path of
                             Nothing ->
-                                movesToPaths' newPoint newAngle newDraw paths tail
+                                movesToPaths_ newPoint newAngle newDraw paths tail
 
                             Just segment ->
-                                movesToPaths'
+                                movesToPaths_
                                     newPoint
                                     newAngle
                                     newDraw
@@ -434,7 +433,7 @@ movesToPaths moves =
                 [] ->
                     paths
     in
-        movesToPaths' ( 0, 0 ) 90 True [] moves
+        movesToPaths_ ( 0, 0 ) 90 True [] moves
 
 
 urlFromCommands : List String -> T.Language -> String
@@ -452,7 +451,6 @@ urlFromCommands commands lang =
             ++ (commands
                     |> String.join "\n"
                     |> Base64.encode
-                    |> Result.withDefault ""
                )
             ++ "&lang="
             ++ langStr

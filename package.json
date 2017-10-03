@@ -4,7 +4,9 @@
   "description": "Playing around with Elm, implementing a turtle",
   "main": "index.js",
   "scripts": {
-      "publish-to-gh-pages": "node_modules/.bin/gh-pages --dist ./ --src \"*/{index.html,elm.js}\""
+    "publish-to-gh-pages": "gh-pages --dist ./ --src \"*/{index.html,elm.js}\"",
+    "led-matrix": "cd led-matrix && elm-live Main.elm --output=elm.js --open",
+    "turtle": "cd turtle && elm-live Main.elm --output=elm.js --open"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,8 @@
   },
   "homepage": "https://github.com/magopian/elm-fun#readme",
   "devDependencies": {
-    "gh-pages": "^0.11.0"
+    "gh-pages": "^0.11.0",
+    "elm": "^0.18.0",
+    "elm-live": "^2.7.5"
   }
 }

@@ -2,7 +2,6 @@ module Main exposing (..)
 
 import Array
 import Html
-import Html.App
 import Html.Attributes
 import Html.Events
 import String
@@ -265,7 +264,7 @@ view model =
             [ Html.text
                 "Matrix stays a square: "
             , Html.input
-                [ Html.Attributes.type' "checkbox"
+                [ Html.Attributes.type_ "checkbox"
                 , Html.Attributes.checked model.enforceSquare
                 , Html.Events.onCheck ChangeEnforceSquare
                 ]
@@ -276,7 +275,7 @@ view model =
             [ Html.text
                 "Matrix width: "
             , Html.input
-                [ Html.Attributes.type' "range"
+                [ Html.Attributes.type_ "range"
                 , Html.Attributes.value <| toString model.matrixWidth
                 , Html.Attributes.min "1"
                 , Html.Attributes.max "32"
@@ -295,7 +294,7 @@ view model =
             [ Html.text
                 "Matrix height: "
             , Html.input
-                [ Html.Attributes.type' "range"
+                [ Html.Attributes.type_ "range"
                 , Html.Attributes.value <| toString model.matrixHeight
                 , Html.Attributes.min "1"
                 , Html.Attributes.max "32"
@@ -431,9 +430,8 @@ textToMatrix text =
 -- Main
 
 
-main : Program Never
 main =
-    Html.App.beginnerProgram
+    Html.beginnerProgram
         { model = initialModel
         , update = update
         , view = view
