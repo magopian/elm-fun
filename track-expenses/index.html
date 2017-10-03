@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Track expenses</title>
+    <script src="elm.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" media="all" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+  </body>
+
+  <script>
+    Elm.Main.embed(document.getElementById("root"));
+  </script>
+
+  <script>
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    const passphrase = 'trululala';
+    const email = 'foobar@baz.com';
+    const passphraseKey = encoder.encode(passphrase);
+    const initVector = encoder.encode(email);
+    const data = encoder.encode('this is some test to encrypt');
+
+    crypto.subtle.importKey(
+        'raw',
+        passphraseKey,
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey'])
+    .then(key => {
+        return crypto.subtle.deriveKey(
+            {name: 'PBKDF2',
+             salt: initVector,
+             iterations: 100,
+             'hash': 'sha-256'},
+            key,
+            {name: 'AES-GCM', 'length': 256},
+            false,
+            ['encrypt', 'decrypt'])
+    })
+    .then(key => {
+        return crypto.subtle.encrypt(
+              {name: 'AES-GCM',
+               iv: initVector},
+              key,
+              data)
+        .then(encrypted => {
+                  return crypto.subtle.decrypt(
+                    {name: 'AES-GCM',
+                     iv: initVector},
+                    key,
+                    encrypted)
+        })
+    })
+    .then(decrypted => console.log("decrypted: ", decoder.decode(decrypted)))
+    .catch(error => console.error("failed decryption", error));
+
+  </script>
+</html>
