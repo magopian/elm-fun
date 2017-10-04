@@ -42,6 +42,7 @@ type alias Model =
     }
 
 
+turtle : List String
 turtle =
     [ "Forward 10"
     , "Right 155"
@@ -229,6 +230,7 @@ translateError lang { line, error } =
 -- Main
 
 
+main : Program Flags Model Msg
 main =
     Html.programWithFlags
         { init = init

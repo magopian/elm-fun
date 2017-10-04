@@ -430,6 +430,7 @@ textToMatrix text =
 -- Main
 
 
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = initialModel
