@@ -1,4 +1,12 @@
-module Translation exposing (Language(..), TranslationId(..), translate)
+module Translation
+    exposing
+        ( Language(..)
+        , TranslationId(..)
+        , codeToLanguage
+        , translate
+        )
+
+import Dict
 
 
 type Language
@@ -26,6 +34,13 @@ type TranslationId
     | PenDown
     | ParseCommandError Int String
     | ParseFloatError Int String
+
+
+codeToLanguage : String -> Language
+codeToLanguage languageCode =
+    Dict.fromList [ ( "en", English ), ( "fr", French ) ]
+        |> Dict.get languageCode
+        |> Maybe.withDefault English
 
 
 translate : Language -> TranslationId -> String

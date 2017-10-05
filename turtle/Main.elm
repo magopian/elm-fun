@@ -1,18 +1,20 @@
 module Main exposing (..)
 
-import Base64
 import Collage
 import Element
 import Examples exposing (house, star, elm)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Http
 import List
+import Navigation
 import String
 import Translation as T
+import UrlParser exposing ((<?>))
 
 
--- Update
+-- Types
 
 
 type Msg
@@ -22,6 +24,7 @@ type Msg
     | LoadElm
     | DrawTurtle Bool
     | SetLanguage T.Language
+    | UrlChange Navigation.Location
 
 
 type Error
@@ -55,66 +58,109 @@ turtle =
     ]
 
 
-type alias Flags =
-    { lang : Maybe String
-    , hash : Maybe String
+
+-- Parsing URL
+
+
+type alias QueryData =
+    { lang : String
+    , commands : Maybe String
     }
 
 
-init : Flags -> ( Model, Cmd Msg )
-init { lang, hash } =
+queryParser : UrlParser.Parser (String -> Maybe String -> a) a
+queryParser =
+    UrlParser.top <?> stringParamWithDefault "lang" "en" <?> UrlParser.stringParam "commands"
+
+
+stringParamWithDefault : String -> String -> UrlParser.QueryParser (String -> a) a
+stringParamWithDefault param default =
+    UrlParser.customParam param (Maybe.withDefault default)
+
+
+parseCommands : Maybe String -> T.Language -> List String
+parseCommands commands language =
+    case commands of
+        Just commandList ->
+            String.split "\n" commandList
+
+        Nothing ->
+            house language
+
+
+parseUrl : Navigation.Location -> ( T.Language, List String )
+parseUrl location =
     let
-        langCode =
-            Maybe.withDefault "en" lang
+        { lang, commands } =
+            UrlParser.parseHash (UrlParser.map QueryData queryParser) location
+                |> Maybe.withDefault { lang = "en", commands = Nothing }
 
         language =
-            case langCode of
-                "fr" ->
-                    T.French
-
-                _ ->
-                    T.English
-
-        defaultModel =
-            Model (house language) True language
+            T.codeToLanguage lang
     in
-        case hash of
-            Nothing ->
-                defaultModel ! []
+        ( language, parseCommands commands language )
 
-            Just hash ->
-                case Base64.decode hash of
-                    Ok commands ->
-                        (Model (String.split "\n" commands) True language) ! []
 
-                    Err msg ->
-                        let
-                            _ =
-                                Debug.log "failed to decode hash" msg
-                        in
-                            defaultModel ! []
+urlFromCommands : List String -> T.Language -> String
+urlFromCommands commands lang =
+    let
+        langStr =
+            case lang of
+                T.English ->
+                    "en"
+
+                T.French ->
+                    "fr"
+    in
+        "?commands="
+            ++ (commands
+                    |> String.join "\n"
+                    |> Http.encodeUri
+               )
+            ++ "&lang="
+            ++ langStr
+
+
+
+-- Update
+
+
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
+    let
+        ( language, commands ) =
+            parseUrl location
+    in
+        Model commands True language ! [ Navigation.newUrl (urlFromCommands commands language) ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CommandsChange commands ->
-            { model | commands = String.split "\n" commands } ! []
+            model ! [ Navigation.newUrl (urlFromCommands (String.split "\n" commands) model.lang) ]
 
         LoadHouse ->
-            { model | commands = (house model.lang) } ! []
+            model ! [ Navigation.newUrl (urlFromCommands (house model.lang) model.lang) ]
 
         LoadStar ->
-            { model | commands = (star model.lang) } ! []
+            model ! [ Navigation.newUrl (urlFromCommands (star model.lang) model.lang) ]
 
         LoadElm ->
-            { model | commands = (elm model.lang) } ! []
+            model ! [ Navigation.newUrl (urlFromCommands (elm model.lang) model.lang) ]
 
         DrawTurtle bool ->
             { model | drawTurtle = bool } ! []
 
         SetLanguage lang ->
-            { model | lang = lang } ! []
+            model ! [ Navigation.newUrl (urlFromCommands model.commands lang) ]
+
+        UrlChange newLocation ->
+            let
+                ( language, commands ) =
+                    parseUrl newLocation
+            in
+                { model | lang = language, commands = commands } ! []
 
 
 
@@ -178,14 +224,6 @@ view model =
             , Html.button
                 [ Html.Events.onClick LoadElm ]
                 [ Html.text <| T.translate model.lang T.Elm ]
-            , Html.p
-                []
-                [ Html.a
-                    [ Html.Attributes.href
-                        (urlFromCommands model.commands model.lang)
-                    ]
-                    [ Html.text <| T.translate model.lang T.ShareUrl ]
-                ]
             , Html.pre []
                 [ errors
                     |> List.map (translateError model.lang)
@@ -230,9 +268,9 @@ translateError lang { line, error } =
 -- Main
 
 
-main : Program Flags Model Msg
+main : Program Never Model Msg
 main =
-    Html.programWithFlags
+    Navigation.program UrlChange
         { init = init
         , view = view
         , update = update
@@ -436,23 +474,3 @@ movesToPaths moves =
                     paths
     in
         movesToPaths_ ( 0, 0 ) 90 True [] moves
-
-
-urlFromCommands : List String -> T.Language -> String
-urlFromCommands commands lang =
-    let
-        langStr =
-            case lang of
-                T.English ->
-                    "en"
-
-                T.French ->
-                    "fr"
-    in
-        "?hash="
-            ++ (commands
-                    |> String.join "\n"
-                    |> Base64.encode
-               )
-            ++ "&lang="
-            ++ langStr
