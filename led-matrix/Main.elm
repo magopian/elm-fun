@@ -4,7 +4,10 @@ import Array
 import Html
 import Html.Attributes
 import Html.Events
+import Http
+import Navigation
 import String
+import UrlParser exposing ((<?>))
 
 
 -- Data
@@ -71,6 +74,7 @@ type Msg
     | ChangeMatrixWidth String
     | ChangeMatrixHeight String
     | ChangeEnforceSquare Bool
+    | UrlChange Navigation.Location
 
 
 type alias RowIndex =
@@ -115,26 +119,25 @@ initialModel =
 -- Update
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleLed row col ->
             let
                 prevLedStatus =
                     getLedStatus row col model
+
+                newMatrix =
+                    model |> setLedStatus row col (not prevLedStatus)
             in
-                { model
-                    | matrix =
-                        model
-                            |> setLedStatus row col (not prevLedStatus)
-                }
+                model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (matrixToText newMatrix)) ]
 
         UpdateMatrix text ->
             let
                 lines =
                     String.split "\n" text
 
-                max_width =
+                maxWidth =
                     lines
                         |> List.map String.length
                         |> List.foldr max 0
@@ -142,11 +145,7 @@ update msg model =
                 newMatrix =
                     textToMatrix text
             in
-                { model
-                    | matrix = newMatrix
-                    , matrixWidth = max_width
-                    , matrixHeight = Array.length newMatrix
-                }
+                model ! [ Navigation.newUrl (urlFromData maxWidth (Array.length newMatrix) text) ]
 
         LoadA ->
             let
@@ -156,11 +155,7 @@ update msg model =
                 size =
                     Array.length newMatrix
             in
-                { model
-                    | matrix = newMatrix
-                    , matrixWidth = size
-                    , matrixHeight = size
-                }
+                model ! [ Navigation.newUrl (urlFromData size size loadA) ]
 
         LoadSmiley ->
             let
@@ -170,24 +165,18 @@ update msg model =
                 size =
                     Array.length newMatrix
             in
-                { model
-                    | matrix = newMatrix
-                    , matrixWidth = size
-                    , matrixHeight = size
-                }
+                model ! [ Navigation.newUrl (urlFromData size size loadSmiley) ]
 
         LoadEmpty ->
-            { model
-                | matrix = textToMatrix (loadEmpty model.matrixWidth model.matrixHeight)
-            }
+            model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (loadEmpty model.matrixWidth model.matrixHeight)) ]
 
         LoadFull ->
-            { model | matrix = textToMatrix (loadFull model.matrixWidth model.matrixHeight) }
+            model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (loadFull model.matrixWidth model.matrixHeight)) ]
 
         ChangeMatrixWidth newWidth ->
             case String.toInt newWidth of
                 Err msg ->
-                    model
+                    model ! []
 
                 Ok width ->
                     let
@@ -197,16 +186,12 @@ update msg model =
                             else
                                 model.matrixHeight
                     in
-                        { model
-                            | matrix = textToMatrix (loadEmpty width height)
-                            , matrixWidth = width
-                            , matrixHeight = height
-                        }
+                        model ! [ Navigation.newUrl (urlFromData width height (loadEmpty width height)) ]
 
         ChangeMatrixHeight newHeight ->
             case String.toInt newHeight of
                 Err msg ->
-                    model
+                    model ! []
 
                 Ok height ->
                     let
@@ -216,14 +201,22 @@ update msg model =
                             else
                                 model.matrixWidth
                     in
-                        { model
-                            | matrix = textToMatrix (loadEmpty width height)
-                            , matrixWidth = width
-                            , matrixHeight = height
-                        }
+                        model ! [ Navigation.newUrl (urlFromData width height (loadEmpty width height)) ]
 
         ChangeEnforceSquare checked ->
-            { model | enforceSquare = checked }
+            { model | enforceSquare = checked } ! []
+
+        UrlChange location ->
+            let
+                ( width, height, data ) =
+                    parseUrl location
+            in
+                { model
+                    | matrixWidth = width
+                    , matrixHeight = height
+                    , matrix = textToMatrix data
+                }
+                    ! []
 
 
 getLedStatus : RowIndex -> ColIndex -> Model -> Bool
@@ -430,10 +423,71 @@ textToMatrix text =
 -- Main
 
 
+type alias QueryData =
+    { height : Int
+    , width : Int
+    , data : Maybe String
+    }
+
+
+queryParser : UrlParser.Parser (Int -> Int -> Maybe String -> a) a
+queryParser =
+    UrlParser.top
+        <?> intParamWithDefault "height" 8
+        <?> intParamWithDefault "width" 8
+        <?> UrlParser.stringParam "data"
+
+
+intParamWithDefault : String -> Int -> UrlParser.QueryParser (Int -> a) a
+intParamWithDefault param default =
+    UrlParser.customParam param
+        (\val ->
+            val
+                |> Maybe.andThen (String.toInt >> Result.toMaybe)
+                |> Maybe.withDefault default
+        )
+
+
+parseLines : Maybe String -> Int -> Int -> String
+parseLines data height width =
+    data
+        |> Maybe.withDefault (loadEmpty height width)
+
+
+parseUrl : Navigation.Location -> ( Int, Int, String )
+parseUrl location =
+    let
+        { width, height, data } =
+            UrlParser.parseHash (UrlParser.map QueryData queryParser) location
+                |> Maybe.withDefault { width = 8, height = 8, data = Nothing }
+    in
+        ( width, height, parseLines data width height )
+
+
+urlFromData : Int -> Int -> String -> String
+urlFromData width height data =
+    "?width="
+        ++ (toString width)
+        ++ "&height="
+        ++ (toString height)
+        ++ "&data="
+        ++ (Http.encodeUri data)
+
+
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
+    let
+        ( width, height, data ) =
+            parseUrl location
+    in
+        initialModel ! [ Navigation.newUrl (urlFromData width height data) ]
+
+
 main : Program Never Model Msg
 main =
-    Html.beginnerProgram
-        { model = initialModel
-        , update = update
+    Navigation.program UrlChange
+        { init = init
         , view = view
+        , update = update
+        , subscriptions = always Sub.none
         }
