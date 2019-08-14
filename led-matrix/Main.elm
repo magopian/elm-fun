@@ -1,13 +1,17 @@
-module Main exposing (..)
+module Main exposing (ColIndex, LedStatus, Matrix, Model, Msg(..), QueryData, Row, RowIndex, displayLed, displayMatrix, displayRow, emptyRow, getLedStatus, init, initialModel, intParamWithDefault, loadA, loadEmpty, loadFull, loadSame, loadSmiley, main, matrixToText, parseLines, parseUrl, queryParser, setLedStatus, stringToBool, textToMatrix, update, urlFromData, view)
 
 import Array
+import Browser
+import Browser.Navigation as Nav
 import Html
 import Html.Attributes
 import Html.Events
 import Http
-import Navigation
 import String
-import UrlParser exposing ((<?>))
+import Url
+import Url.Parser as UrlParser exposing ((<?>))
+import Url.Parser.Query as Query
+
 
 
 -- Data
@@ -74,7 +78,8 @@ type Msg
     | ChangeMatrixWidth String
     | ChangeMatrixHeight String
     | ChangeEnforceSquare Bool
-    | UrlChange Navigation.Location
+    | UrlChange Url.Url
+    | UrlRequest Browser.UrlRequest
 
 
 type alias RowIndex =
@@ -102,6 +107,7 @@ type alias Model =
     , matrixWidth : Int
     , matrixHeight : Int
     , enforceSquare : Bool
+    , key : Nav.Key
     }
 
 
@@ -110,9 +116,14 @@ emptyRow size =
     Array.repeat size False
 
 
-initialModel : Model
-initialModel =
-    { matrix = textToMatrix (loadEmpty 8 8), matrixWidth = 8, matrixHeight = 8, enforceSquare = True }
+initialModel : Nav.Key -> Model
+initialModel key =
+    { matrix = textToMatrix (loadEmpty 8 8)
+    , matrixWidth = 8
+    , matrixHeight = 8
+    , enforceSquare = True
+    , key = key
+    }
 
 
 
@@ -130,7 +141,7 @@ update msg model =
                 newMatrix =
                     model |> setLedStatus row col (not prevLedStatus)
             in
-                model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (matrixToText newMatrix)) ]
+            ( model, Nav.pushUrl model.key (urlFromData model.matrixWidth model.matrixHeight (matrixToText newMatrix)) )
 
         UpdateMatrix text ->
             let
@@ -145,7 +156,7 @@ update msg model =
                 newMatrix =
                     textToMatrix text
             in
-                model ! [ Navigation.newUrl (urlFromData maxWidth (Array.length newMatrix) text) ]
+            ( model, Nav.pushUrl model.key (urlFromData maxWidth (Array.length newMatrix) text) )
 
         LoadA ->
             let
@@ -155,7 +166,7 @@ update msg model =
                 size =
                     Array.length newMatrix
             in
-                model ! [ Navigation.newUrl (urlFromData size size loadA) ]
+            ( model, Nav.pushUrl model.key (urlFromData size size loadA) )
 
         LoadSmiley ->
             let
@@ -165,58 +176,73 @@ update msg model =
                 size =
                     Array.length newMatrix
             in
-                model ! [ Navigation.newUrl (urlFromData size size loadSmiley) ]
+            ( model, Nav.pushUrl model.key (urlFromData size size loadSmiley) )
 
         LoadEmpty ->
-            model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (loadEmpty model.matrixWidth model.matrixHeight)) ]
+            ( model, Nav.pushUrl model.key (urlFromData model.matrixWidth model.matrixHeight (loadEmpty model.matrixWidth model.matrixHeight)) )
 
         LoadFull ->
-            model ! [ Navigation.newUrl (urlFromData model.matrixWidth model.matrixHeight (loadFull model.matrixWidth model.matrixHeight)) ]
+            ( model, Nav.pushUrl model.key (urlFromData model.matrixWidth model.matrixHeight (loadFull model.matrixWidth model.matrixHeight)) )
 
         ChangeMatrixWidth newWidth ->
             case String.toInt newWidth of
-                Err msg ->
-                    model ! []
+                Nothing ->
+                    ( model, Cmd.none )
 
-                Ok width ->
+                Just width ->
                     let
                         height =
                             if model.enforceSquare then
                                 width
+
                             else
                                 model.matrixHeight
                     in
-                        model ! [ Navigation.newUrl (urlFromData width height (loadEmpty width height)) ]
+                    ( model, Nav.pushUrl model.key (urlFromData width height (loadEmpty width height)) )
 
         ChangeMatrixHeight newHeight ->
             case String.toInt newHeight of
-                Err msg ->
-                    model ! []
+                Nothing ->
+                    ( model, Cmd.none )
 
-                Ok height ->
+                Just height ->
                     let
                         width =
                             if model.enforceSquare then
                                 height
+
                             else
                                 model.matrixWidth
                     in
-                        model ! [ Navigation.newUrl (urlFromData width height (loadEmpty width height)) ]
+                    ( model, Nav.pushUrl model.key (urlFromData width height (loadEmpty width height)) )
 
         ChangeEnforceSquare checked ->
-            { model | enforceSquare = checked } ! []
+            ( { model | enforceSquare = checked }, Cmd.none )
 
         UrlChange location ->
             let
                 ( width, height, data ) =
                     parseUrl location
             in
-                { model
-                    | matrixWidth = width
-                    , matrixHeight = height
-                    , matrix = textToMatrix data
-                }
-                    ! []
+            ( { model
+                | matrixWidth = width
+                , matrixHeight = height
+                , matrix = textToMatrix data
+              }
+            , Cmd.none
+            )
+
+        UrlRequest urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Nav.pushUrl model.key (Url.toString url)
+                    )
+
+                Browser.External url ->
+                    ( model
+                    , Nav.load url
+                    )
 
 
 getLedStatus : RowIndex -> ColIndex -> Model -> Bool
@@ -240,112 +266,113 @@ setLedStatus rowIndex colIndex status model =
             row
                 |> Array.set colIndex status
     in
-        model.matrix
-            |> Array.set rowIndex updatedRow
+    model.matrix
+        |> Array.set rowIndex updatedRow
 
 
 
 -- View
 
 
-view : Model -> Html.Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    Html.div
-        []
+    { title = "Led Matrix"
+    , body =
         [ Html.div
             []
-            [ Html.text
-                "Matrix stays a square: "
-            , Html.input
-                [ Html.Attributes.type_ "checkbox"
-                , Html.Attributes.checked model.enforceSquare
-                , Html.Events.onCheck ChangeEnforceSquare
+            [ Html.div
+                []
+                [ Html.text
+                    "Matrix stays a square: "
+                , Html.input
+                    [ Html.Attributes.type_ "checkbox"
+                    , Html.Attributes.checked model.enforceSquare
+                    , Html.Events.onCheck ChangeEnforceSquare
+                    ]
+                    []
+                ]
+            , Html.div
+                []
+                [ Html.text
+                    "Matrix width: "
+                , Html.input
+                    [ Html.Attributes.type_ "range"
+                    , Html.Attributes.value <| String.fromInt model.matrixWidth
+                    , Html.Attributes.min "1"
+                    , Html.Attributes.max "32"
+                    , Html.Events.onInput ChangeMatrixWidth
+                    ]
+                    []
+                , Html.input
+                    [ Html.Attributes.value <|
+                        String.fromInt model.matrixWidth
+                    , Html.Events.onInput ChangeMatrixWidth
+                    ]
+                    []
+                ]
+            , Html.div
+                []
+                [ Html.text
+                    "Matrix height: "
+                , Html.input
+                    [ Html.Attributes.type_ "range"
+                    , Html.Attributes.value <| String.fromInt model.matrixHeight
+                    , Html.Attributes.min "1"
+                    , Html.Attributes.max "32"
+                    , Html.Events.onInput ChangeMatrixHeight
+                    ]
+                    []
+                , Html.input
+                    [ Html.Attributes.value <|
+                        String.fromInt model.matrixHeight
+                    , Html.Events.onInput ChangeMatrixHeight
+                    ]
+                    []
+                ]
+            , displayMatrix model.matrix
+            , Html.textarea
+                [ Html.Attributes.style "width" "500px"
+                , Html.Attributes.style "height" "300px"
+                , Html.Attributes.value (matrixToText model.matrix)
+                , Html.Events.onInput UpdateMatrix
                 ]
                 []
-            ]
-        , Html.div
-            []
-            [ Html.text
-                "Matrix width: "
-            , Html.input
-                [ Html.Attributes.type_ "range"
-                , Html.Attributes.value <| toString model.matrixWidth
-                , Html.Attributes.min "1"
-                , Html.Attributes.max "32"
-                , Html.Events.onInput ChangeMatrixWidth
-                ]
+            , Html.div
                 []
-            , Html.input
-                [ Html.Attributes.value <|
-                    toString model.matrixWidth
-                , Html.Events.onInput ChangeMatrixWidth
+                [ Html.button
+                    [ Html.Events.onClick LoadA ]
+                    [ Html.text "A" ]
+                , Html.button
+                    [ Html.Events.onClick LoadSmiley ]
+                    [ Html.text ":)" ]
+                , Html.button
+                    [ Html.Events.onClick LoadEmpty ]
+                    [ Html.text "Empty" ]
+                , Html.button
+                    [ Html.Events.onClick LoadFull ]
+                    [ Html.text "Full" ]
                 ]
-                []
-            ]
-        , Html.div
-            []
-            [ Html.text
-                "Matrix height: "
-            , Html.input
-                [ Html.Attributes.type_ "range"
-                , Html.Attributes.value <| toString model.matrixHeight
-                , Html.Attributes.min "1"
-                , Html.Attributes.max "32"
-                , Html.Events.onInput ChangeMatrixHeight
-                ]
-                []
-            , Html.input
-                [ Html.Attributes.value <|
-                    toString model.matrixHeight
-                , Html.Events.onInput ChangeMatrixHeight
-                ]
-                []
-            ]
-        , displayMatrix model.matrix
-        , Html.textarea
-            [ Html.Attributes.style
-                [ ( "width", "500px" )
-                , ( "height", "300px" )
-                ]
-            , Html.Attributes.value (matrixToText model.matrix)
-            , Html.Events.onInput UpdateMatrix
-            ]
-            []
-        , Html.div
-            []
-            [ Html.button
-                [ Html.Events.onClick LoadA ]
-                [ Html.text "A" ]
-            , Html.button
-                [ Html.Events.onClick LoadSmiley ]
-                [ Html.text ":)" ]
-            , Html.button
-                [ Html.Events.onClick LoadEmpty ]
-                [ Html.text "Empty" ]
-            , Html.button
-                [ Html.Events.onClick LoadFull ]
-                [ Html.text "Full" ]
             ]
         ]
+    }
 
 
 displayLed : ColIndex -> RowIndex -> LedStatus -> Html.Html Msg
 displayLed rowNum colNum led =
     Html.div
-        [ Html.Attributes.style
-            [ ( "display", "inline-block" )
-            , ( "background-color"
-              , if led then
-                    "lime"
-                else
-                    "darkslategray"
-              )
-            , ( "width", "1em" )
-            , ( "height", "1em" )
-            , ( "line-height", "1em" )
-            , ( "border-radius", "0.5em" )
-            , ( "margin", "0.2em" )
-            ]
+        [ Html.Attributes.style "display" "inline-block"
+        , Html.Attributes.style "background-color"
+            (if led then
+                "lime"
+
+             else
+                "darkslategray"
+            )
+        , Html.Attributes.style "width" "1em"
+        , Html.Attributes.style "height" "1em"
+        , Html.Attributes.style "line-height" "1em"
+        , Html.Attributes.style "border-radius" "0.5em"
+        , Html.Attributes.style "margin" "0.2em"
         , Html.Events.onClick (ToggleLed rowNum colNum)
         ]
         []
@@ -354,19 +381,17 @@ displayLed rowNum colNum led =
 displayRow : RowIndex -> Row -> Html.Html Msg
 displayRow rowNum row =
     Html.div
-        [ Html.Attributes.style
-            [ ( "background-color", "black" )
-            , ( "height", "1.4em" )
-            ]
+        [ Html.Attributes.style "background-color" "black"
+        , Html.Attributes.style "height" "1.4em"
         ]
-        ((Array.indexedMap (displayLed rowNum) row) |> Array.toList)
+        (Array.indexedMap (displayLed rowNum) row |> Array.toList)
 
 
 displayMatrix : Matrix -> Html.Html Msg
 displayMatrix matrix =
     Html.div
-        [ Html.Attributes.style [ ( "float", "left" ) ] ]
-        ((Array.indexedMap displayRow matrix) |> Array.toList)
+        [ Html.Attributes.style "float" "left" ]
+        (Array.indexedMap displayRow matrix |> Array.toList)
 
 
 matrixToText : Matrix -> String
@@ -380,15 +405,16 @@ matrixToText matrix =
                     (\b ->
                         if b then
                             "1"
+
                         else
                             "0"
                     )
                 |> String.join ""
     in
-        matrix
-            |> Array.map rowToText
-            |> Array.toList
-            |> String.join "\n"
+    matrix
+        |> Array.map rowToText
+        |> Array.toList
+        |> String.join "\n"
 
 
 stringToBool : String -> Bool
@@ -415,8 +441,8 @@ textToMatrix text =
                 |> Array.fromList
                 |> Array.map stringToBool
     in
-        rows
-            |> Array.map lineToBools
+    rows
+        |> Array.map lineToBools
 
 
 
@@ -435,16 +461,21 @@ queryParser =
     UrlParser.top
         <?> intParamWithDefault "height" 8
         <?> intParamWithDefault "width" 8
-        <?> UrlParser.stringParam "data"
+        <?> Query.string "data"
 
 
-intParamWithDefault : String -> Int -> UrlParser.QueryParser (Int -> a) a
+intParamWithDefault : String -> Int -> Query.Parser Int
 intParamWithDefault param default =
-    UrlParser.customParam param
-        (\val ->
-            val
-                |> Maybe.andThen (String.toInt >> Result.toMaybe)
-                |> Maybe.withDefault default
+    Query.custom param
+        (\list ->
+            case list of
+                [] ->
+                    default
+
+                val :: _ ->
+                    val
+                        |> String.toInt
+                        |> Maybe.withDefault default
         )
 
 
@@ -454,40 +485,42 @@ parseLines data height width =
         |> Maybe.withDefault (loadEmpty height width)
 
 
-parseUrl : Navigation.Location -> ( Int, Int, String )
+parseUrl : Url.Url -> ( Int, Int, String )
 parseUrl location =
     let
         { width, height, data } =
-            UrlParser.parseHash (UrlParser.map QueryData queryParser) location
+            UrlParser.parse (UrlParser.map QueryData queryParser) location
                 |> Maybe.withDefault { width = 8, height = 8, data = Nothing }
     in
-        ( width, height, parseLines data width height )
+    ( width, height, parseLines data width height )
 
 
 urlFromData : Int -> Int -> String -> String
 urlFromData width height data =
     "?width="
-        ++ (toString width)
+        ++ String.fromInt width
         ++ "&height="
-        ++ (toString height)
+        ++ String.fromInt height
         ++ "&data="
-        ++ (Http.encodeUri data)
+        ++ Url.percentEncode data
 
 
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ url key =
     let
         ( width, height, data ) =
-            parseUrl location
+            parseUrl url
     in
-        initialModel ! [ Navigation.newUrl (urlFromData width height data) ]
+    ( initialModel key, Nav.pushUrl key (urlFromData width height data) )
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Navigation.program UrlChange
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = always Sub.none
+        , onUrlRequest = UrlRequest
+        , onUrlChange = UrlChange
         }
