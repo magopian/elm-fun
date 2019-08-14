@@ -1,17 +1,20 @@
-module Main exposing (..)
+module Main exposing (Angle, Error(..), ErrorMessage, Model, Msg(..), Point, QueryData, Segment, Step(..), commandsToMoves, drawPath, drawShape, init, languageSwitcher, main, movesToPaths, parseCommand, parseCommands, parseUrl, queryParser, splitMovesFromErrors, stringParamWithDefault, stringToFloat, toPath, translateError, turtle, update, urlFromCommands, view)
 
+import Browser
+import Browser.Navigation as Nav
 import Collage
-import Element
-import Examples exposing (house, star, elm)
+import Collage.Render
+import Examples exposing (elm, house, star)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
-import Http
 import List
-import Navigation
 import String
 import Translation as T
-import UrlParser exposing ((<?>))
+import Url
+import Url.Parser as UrlParser exposing ((<?>))
+import Url.Parser.Query as Query
+
 
 
 -- Types
@@ -24,7 +27,8 @@ type Msg
     | LoadElm
     | DrawTurtle Bool
     | SetLanguage T.Language
-    | UrlChange Navigation.Location
+    | UrlChange Url.Url
+    | UrlRequest Browser.UrlRequest
 
 
 type Error
@@ -42,6 +46,7 @@ type alias Model =
     { commands : List String
     , drawTurtle : Bool
     , lang : T.Language
+    , key : Nav.Key
     }
 
 
@@ -70,12 +75,14 @@ type alias QueryData =
 
 queryParser : UrlParser.Parser (String -> Maybe String -> a) a
 queryParser =
-    UrlParser.top <?> stringParamWithDefault "lang" "en" <?> UrlParser.stringParam "commands"
+    UrlParser.top
+        <?> stringParamWithDefault "lang" "en"
+        <?> Query.string "commands"
 
 
-stringParamWithDefault : String -> String -> UrlParser.QueryParser (String -> a) a
+stringParamWithDefault : String -> String -> Query.Parser String
 stringParamWithDefault param default =
-    UrlParser.customParam param (Maybe.withDefault default)
+    Query.custom param (List.head >> Maybe.withDefault default)
 
 
 parseCommands : Maybe String -> T.Language -> List String
@@ -88,17 +95,17 @@ parseCommands commands language =
             house language
 
 
-parseUrl : Navigation.Location -> ( T.Language, List String )
+parseUrl : Url.Url -> ( T.Language, List String )
 parseUrl location =
     let
         { lang, commands } =
-            UrlParser.parseHash (UrlParser.map QueryData queryParser) location
+            UrlParser.parse (UrlParser.map QueryData queryParser) location
                 |> Maybe.withDefault { lang = "en", commands = Nothing }
 
         language =
             T.codeToLanguage lang
     in
-        ( language, parseCommands commands language )
+    ( language, parseCommands commands language )
 
 
 urlFromCommands : List String -> T.Language -> String
@@ -112,67 +119,80 @@ urlFromCommands commands lang =
                 T.French ->
                     "fr"
     in
-        "?commands="
-            ++ (commands
-                    |> String.join "\n"
-                    |> Http.encodeUri
-               )
-            ++ "&lang="
-            ++ langStr
+    "?commands="
+        ++ (commands
+                |> String.join "\n"
+                |> Url.percentEncode
+           )
+        ++ "&lang="
+        ++ langStr
 
 
 
 -- Update
 
 
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ url key =
     let
         ( language, commands ) =
-            parseUrl location
+            parseUrl url
     in
-        Model commands True language ! [ Navigation.newUrl (urlFromCommands commands language) ]
+    ( Model commands True language key, Nav.pushUrl key (urlFromCommands commands language) )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CommandsChange commands ->
-            model ! [ Navigation.newUrl (urlFromCommands (String.split "\n" commands) model.lang) ]
+            ( model, Nav.pushUrl model.key (urlFromCommands (String.split "\n" commands) model.lang) )
 
         LoadHouse ->
-            model ! [ Navigation.newUrl (urlFromCommands (house model.lang) model.lang) ]
+            ( model, Nav.pushUrl model.key (urlFromCommands (house model.lang) model.lang) )
 
         LoadStar ->
-            model ! [ Navigation.newUrl (urlFromCommands (star model.lang) model.lang) ]
+            ( model, Nav.pushUrl model.key (urlFromCommands (star model.lang) model.lang) )
 
         LoadElm ->
-            model ! [ Navigation.newUrl (urlFromCommands (elm model.lang) model.lang) ]
+            ( model, Nav.pushUrl model.key (urlFromCommands (elm model.lang) model.lang) )
 
         DrawTurtle bool ->
-            { model | drawTurtle = bool } ! []
+            ( { model | drawTurtle = bool }, Cmd.none )
 
         SetLanguage lang ->
-            model ! [ Navigation.newUrl (urlFromCommands model.commands lang) ]
+            ( model, Nav.pushUrl model.key (urlFromCommands model.commands lang) )
 
         UrlChange newLocation ->
             let
                 ( language, commands ) =
                     parseUrl newLocation
             in
-                { model | lang = language, commands = commands } ! []
+            ( { model | lang = language, commands = commands }, Cmd.none )
+
+        UrlRequest urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Nav.pushUrl model.key (Url.toString url)
+                    )
+
+                Browser.External url ->
+                    ( model
+                    , Nav.load url
+                    )
 
 
 
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
     let
         commands =
             if model.drawTurtle then
-                (model.commands ++ turtle)
+                model.commands ++ turtle
+
             else
                 model.commands
 
@@ -182,7 +202,9 @@ view model =
         ( errors, moves ) =
             splitMovesFromErrors parsed
     in
-        Html.div []
+    { title = "Turtle"
+    , body =
+        [ Html.div []
             [ languageSwitcher model.lang
             , Html.p
                 []
@@ -201,18 +223,16 @@ view model =
                     ]
                 ]
             , Html.textarea
-                [ Html.Attributes.style
-                    [ ( "width", "600px" )
-                    , ( "height", "600px" )
-                    , ( "float", "left" )
-                    ]
+                [ Html.Attributes.style "width" "600px"
+                , Html.Attributes.style "height" "600px"
+                , Html.Attributes.style "float" "left"
                 , Html.Events.onInput CommandsChange
                 , Html.Attributes.value <| String.join "\n" model.commands
                 ]
                 []
-            , Element.toHtml <|
-                Collage.collage 600 600 <|
-                    ((drawShape <| Collage.rect 600 600)
+            , Collage.Render.svg <|
+                Collage.group <|
+                    ((drawShape <| Collage.rectangle 600 600)
                         :: List.map drawPath (movesToPaths moves)
                     )
             , Html.button
@@ -231,6 +251,8 @@ view model =
                     |> Html.text
                 ]
             ]
+        ]
+    }
 
 
 languageSwitcher : T.Language -> Html Msg
@@ -247,11 +269,11 @@ languageSwitcher lang =
                 ]
                 [ Html.text name ]
     in
-        Html.div
-            []
-            [ button_ T.English "English"
-            , button_ T.French "Français"
-            ]
+    Html.div
+        []
+        [ button_ T.English "English"
+        , button_ T.French "Français"
+        ]
 
 
 translateError : T.Language -> ErrorMessage -> String
@@ -268,13 +290,15 @@ translateError lang { line, error } =
 -- Main
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Navigation.program UrlChange
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = always Sub.none
+        , onUrlChange = UrlChange
+        , onUrlRequest = UrlRequest
         }
 
 
@@ -302,14 +326,23 @@ type Step
     | PenDown
 
 
-drawShape : Collage.Shape -> Collage.Form
+lineStyle : Collage.LineStyle
+lineStyle =
+    let
+        default =
+            Collage.defaultLineStyle
+    in
+    { default | thickness = Collage.verythin }
+
+
+drawShape : Collage.Shape -> Collage.Collage Msg
 drawShape shape =
-    shape |> Collage.outlined Collage.defaultLine
+    shape |> Collage.outlined lineStyle
 
 
-drawPath : Collage.Path -> Collage.Form
+drawPath : Collage.Path -> Collage.Collage Msg
 drawPath path =
-    path |> Collage.traced Collage.defaultLine
+    path |> Collage.traced lineStyle
 
 
 stringToFloat : String -> Result Error Float
@@ -317,12 +350,9 @@ stringToFloat str =
     -- This function is needed to "map" the error to our own type, that we'll
     -- use with i18n. We also want to keep the faulty string for our final
     -- translated message.
-    let
-        errorMessage _ =
-            ParseFloatError str
-    in
-        String.toFloat str
-            |> Result.mapError errorMessage
+    String.toFloat str
+        |> Result.fromMaybe str
+        |> Result.mapError ParseFloatError
 
 
 parseCommand : String -> Result Error Step
@@ -374,7 +404,7 @@ commandsToMoves commands =
 splitMovesFromErrors :
     List ( Int, Result Error Step )
     -> ( List ErrorMessage, List Step )
-splitMovesFromErrors movesAndErrors =
+splitMovesFromErrors moveAndErrorList =
     let
         splitMovesFromErrors_ :
             List ErrorMessage
@@ -396,11 +426,11 @@ splitMovesFromErrors movesAndErrors =
 
                         ( i, Err error ) ->
                             splitMovesFromErrors_
-                                ((ErrorMessage (i + 1) error) :: errors)
+                                (ErrorMessage (i + 1) error :: errors)
                                 moves
                                 tail
     in
-        splitMovesFromErrors_ [] [] movesAndErrors
+    splitMovesFromErrors_ [] [] moveAndErrorList
 
 
 toPath :
@@ -408,37 +438,53 @@ toPath :
     -> Angle
     -> Bool
     -> Step
-    -> ( Point, Angle, Bool, Maybe Collage.Path )
+    -> { point : Point, angle : Angle, draw : Bool, path : Maybe Collage.Path }
 toPath (( x, y ) as currentPoint) currentAngle draw step =
     case step of
         Forward amount ->
             let
                 newPoint =
-                    ( x + (cos (degrees currentAngle)) * amount
-                    , y + (sin (degrees currentAngle)) * amount
+                    ( x + cos (degrees currentAngle) * amount
+                    , y + sin (degrees currentAngle) * amount
                     )
             in
-                ( newPoint
-                , currentAngle
-                , draw
-                , Just <| Collage.segment currentPoint newPoint
-                )
+            { point = newPoint
+            , angle = currentAngle
+            , draw = draw
+            , path = Just <| Collage.segment currentPoint newPoint
+            }
 
         Left angle ->
-            ( currentPoint, currentAngle + angle, draw, Nothing )
+            { point = currentPoint
+            , angle = currentAngle + angle
+            , draw = draw
+            , path = Nothing
+            }
 
         Right angle ->
-            ( currentPoint, currentAngle - angle, draw, Nothing )
+            { point = currentPoint
+            , angle = currentAngle - angle
+            , draw = draw
+            , path = Nothing
+            }
 
         PenUp ->
-            ( currentPoint, currentAngle, False, Nothing )
+            { point = currentPoint
+            , angle = currentAngle
+            , draw = False
+            , path = Nothing
+            }
 
         PenDown ->
-            ( currentPoint, currentAngle, True, Nothing )
+            { point = currentPoint
+            , angle = currentAngle
+            , draw = True
+            , path = Nothing
+            }
 
 
 movesToPaths : List Step -> List Collage.Path
-movesToPaths moves =
+movesToPaths steps =
     let
         movesToPaths_ :
             Point
@@ -447,30 +493,31 @@ movesToPaths moves =
             -> List Collage.Path
             -> List Step
             -> List Collage.Path
-        movesToPaths_ point angle draw paths moves =
+        movesToPaths_ startPoint startAngle startDraw paths moves =
             case moves of
                 head :: tail ->
                     let
-                        ( newPoint, newAngle, newDraw, path ) =
-                            toPath point angle draw head
+                        { point, angle, draw, path } =
+                            toPath startPoint startAngle startDraw head
                     in
-                        case path of
-                            Nothing ->
-                                movesToPaths_ newPoint newAngle newDraw paths tail
+                    case path of
+                        Nothing ->
+                            movesToPaths_ point angle draw paths tail
 
-                            Just segment ->
-                                movesToPaths_
-                                    newPoint
-                                    newAngle
-                                    newDraw
-                                    (if newDraw then
-                                        (segment :: paths)
-                                     else
-                                        paths
-                                    )
-                                    tail
+                        Just segment ->
+                            movesToPaths_
+                                point
+                                angle
+                                draw
+                                (if draw then
+                                    segment :: paths
+
+                                 else
+                                    paths
+                                )
+                                tail
 
                 [] ->
                     paths
     in
-        movesToPaths_ ( 0, 0 ) 90 True [] moves
+    movesToPaths_ ( 0, 0 ) 90 True [] steps

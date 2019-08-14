@@ -1,10 +1,9 @@
-module Translation
-    exposing
-        ( Language(..)
-        , TranslationId(..)
-        , codeToLanguage
-        , translate
-        )
+module Translation exposing
+    ( Language(..)
+    , TranslationId(..)
+    , codeToLanguage
+    , translate
+    )
 
 import Dict
 
@@ -84,18 +83,18 @@ translate lang trans =
 
                 Forward distance ->
                     TranslationSet
-                        ("Forward " ++ toString distance)
-                        ("Avance " ++ toString distance)
+                        ("Forward " ++ String.fromFloat distance)
+                        ("Avance " ++ String.fromFloat distance)
 
                 Left angle ->
                     TranslationSet
-                        ("Left " ++ toString angle)
-                        ("Gauche " ++ toString angle)
+                        ("Left " ++ String.fromFloat angle)
+                        ("Gauche " ++ String.fromFloat angle)
 
                 Right angle ->
                     TranslationSet
-                        ("Right " ++ toString angle)
-                        ("Droite " ++ toString angle)
+                        ("Right " ++ String.fromFloat angle)
+                        ("Droite " ++ String.fromFloat angle)
 
                 PenUp ->
                     TranslationSet "PenUp" "LeveStylo"
@@ -106,13 +105,13 @@ translate lang trans =
                 ParseFloatError line str ->
                     TranslationSet
                         ("Line "
-                            ++ (toString line)
+                            ++ String.fromInt line
                             ++ ": the string '"
                             ++ str
                             ++ "' doesn't look like a valid number"
                         )
                         ("Ligne "
-                            ++ (toString line)
+                            ++ String.fromInt line
                             ++ " : la chaîne '"
                             ++ str
                             ++ "' n'a pas l'air d'un nombre"
@@ -121,21 +120,21 @@ translate lang trans =
                 ParseCommandError line str ->
                     TranslationSet
                         ("Line "
-                            ++ (toString line)
+                            ++ String.fromInt line
                             ++ ": could not understand the command '"
                             ++ str
                             ++ "'"
                         )
                         ("Ligne "
-                            ++ (toString line)
+                            ++ String.fromInt line
                             ++ " : impossible de comprendre la commande '"
                             ++ str
                             ++ "'"
                         )
     in
-        case lang of
-            English ->
-                translationSet.english
+    case lang of
+        English ->
+            translationSet.english
 
-            French ->
-                translationSet.french
+        French ->
+            translationSet.french
