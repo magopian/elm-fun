@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/magopian/elm-fun#readme",
   "devDependencies": {
-    "gh-pages": "^0.11.0",
+    "gh-pages": "^4.0.0",
     "elm": "^0.18.0",
-    "elm-live": "^2.7.5"
+    "elm-live": "^4.0.2"
   }
 }
